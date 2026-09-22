@@ -4,4 +4,4 @@
 - **MSSV:** 2122110153
 
 ## Sơ đồ thiết kế hệ thống
-![Sơ đồ quản lý trọ](ClassDiagram1)
+![Sơ đồ quản lý trọ](ClassDiagram1.PNG)
