@@ -16,7 +16,8 @@ public class DashboardController {
     @Autowired
     private TenantService tenantService;
 
-    @GetMapping("/")
+    // Trang quản trị của chủ trọ chuyển sang đường dẫn /admin
+    @GetMapping("/admin")
     public String dashboard(Model model) {
         long totalRooms = roomService.getAllRooms().size();
         long totalTenants = tenantService.getAllTenants().size();
@@ -31,6 +32,6 @@ public class DashboardController {
         model.addAttribute("emptyRooms", emptyRooms);
         model.addAttribute("rentedRooms", rentedRooms);
 
-        return "dashboard"; // Trỏ tới file dashboard.html làm trang chủ
+        return "dashboard"; // Trỏ tới file dashboard.html
     }
 }

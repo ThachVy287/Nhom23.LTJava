@@ -11,7 +11,8 @@
         <div class="card-body">
             <h3 class="mb-4 text-center text-success">Thêm Phòng Trọ Mới</h3>
             
-            <form th:action="@{/rooms/save}" th:object="${room}" method="post">
+            <!-- Cập nhật th:action trỏ về /admin/rooms/save -->
+            <form th:action="@{/admin/rooms/save}" th:object="${room}" method="post">
                 <div class="mb-3">
                     <label class="form-label">Số phòng:</label>
                     <input type="text" th:field="*{roomNumber}" class="form-control" required placeholder="Nhập số phòng (VD: P101)">
@@ -33,7 +34,8 @@
                 </div>
                 <div class="text-center">
                     <button type="submit" class="btn btn-success px-4">Lưu lại</button>
-                    <a th:href="@{/rooms}" class="btn btn-secondary px-4">Quay lại</a>
+                    <!-- Cập nhật nút quay lại trỏ về /admin/rooms -->
+                    <a th:href="@{/admin/rooms}" class="btn btn-secondary px-4">Quay lại</a>
                 </div>
             </form>
         </div>

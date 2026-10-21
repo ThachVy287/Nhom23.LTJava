@@ -14,8 +14,10 @@
         <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse text-white min-vh-100 p-3">
             <h4 class="text-center py-3 text-warning border-bottom border-secondary">QUẢN LÝ TRỌ</h4>
             <ul class="nav flex-column mt-3">
-                <li class="nav-item mb-2"><a th:href="@{/}" class="nav-link text-white"><i class="bi bi-speedometer2 me-2"></i> Tổng quan</a></li>
-                <li class="nav-item mb-2"><a th:href="@{/rooms}" class="nav-link text-white"><i class="bi bi-door-open me-2"></i> Quản lý Phòng</a></li>
+                <!-- Cập nhật trỏ về /admin -->
+                <li class="nav-item mb-2"><a th:href="@{/admin}" class="nav-link text-white"><i class="bi bi-speedometer2 me-2"></i> Tổng quan</a></li>
+                <!-- Cập nhật trỏ về /admin/rooms -->
+                <li class="nav-item mb-2"><a th:href="@{/admin/rooms}" class="nav-link text-white"><i class="bi bi-door-open me-2"></i> Quản lý Phòng</a></li>
                 <li class="nav-item mb-2"><a th:href="@{/tenants}" class="nav-link text-white"><i class="bi bi-people me-2"></i> Khách Thuê</a></li>
                 <li class="nav-item mb-2"><a th:href="@{/contracts}" class="nav-link text-white"><i class="bi bi-file-earmark-text me-2"></i> Hợp Đồng</a></li>
                 <li class="nav-item mb-2"><a th:href="@{/services}" class="nav-link text-white"><i class="bi bi-tools me-2"></i> Dịch Vụ</a></li>
