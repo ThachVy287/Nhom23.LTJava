@@ -31,26 +31,26 @@ public class ContractController {
         return "contracts"; // Trỏ tới file contracts.html
     }
 
-    // 2. Hiển thị form tạo hợp đồng mới
+    // 2. Hiển thị form THÊM MỚI hợp đồng
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("contract", new Contract());
         model.addAttribute("rooms", roomService.getAllRooms());
         model.addAttribute("tenants", tenantService.getAllTenants());
-        return "contract-form"; // Trỏ tới file contract-form.html
+        return "contract-add"; // Trỏ tới file contract-add.html
     }
 
-    // 5. MỚI: Hiển thị form cập nhật (Sửa) hợp đồng theo ID
+    // 3. Hiển thị form CẬP NHẬT hợp đồng theo ID
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Contract contract = contractService.getContractById(id); // Lấy thông tin hợp đồng hiện tại
+        Contract contract = contractService.getContractById(id);
         model.addAttribute("contract", contract);
         model.addAttribute("rooms", roomService.getAllRooms());
         model.addAttribute("tenants", tenantService.getAllTenants());
-        return "contract-form"; // Dùng chung file contract-form.html
+        return "contract-edit"; // Trỏ tới file contract-edit.html
     }
 
-    // 3. Xử lý lưu hợp đồng (Dùng chung cho cả Thêm mới và Cập nhật)
+    // 4. Xử lý lưu hợp đồng chung (cho cả thêm mới và cập nhật)
     @PostMapping("/save")
     public String saveContract(@ModelAttribute("contract") Contract contract, RedirectAttributes redirectAttributes) {
         contractService.saveContract(contract);
@@ -58,7 +58,7 @@ public class ContractController {
         return "redirect:/contracts";
     }
 
-    // 4. Xóa / Thanh lý hợp đồng có bắt lỗi khóa ngoại
+    // 5. Xóa / Thanh lý hợp đồng có bắt lỗi khóa ngoại
     @GetMapping("/delete/{id}")
     public String deleteContract(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

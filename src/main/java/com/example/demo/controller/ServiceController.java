@@ -23,22 +23,22 @@ public class ServiceController {
         return "services"; // Trỏ tới file services.html
     }
 
-    // 2. Hiển thị form thêm mới dịch vụ
+    // 2. Hiển thị form THÊM MỚI dịch vụ
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("service", new UtilityService());
-        return "service-form"; // Trỏ tới file service-form.html
+        return "service-add"; // Trỏ tới file service-add.html
     }
 
-    // 5. MỚI: Hiển thị form cập nhật (Sửa) thông tin dịch vụ theo ID
+    // 3. Hiển thị form CẬP NHẬT dịch vụ theo ID
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        UtilityService service = serviceManager.getServiceById(id); // Lấy thông tin dịch vụ hiện tại theo ID
+        UtilityService service = serviceManager.getServiceById(id);
         model.addAttribute("service", service);
-        return "service-form"; // Dùng chung file service-form.html
+        return "service-edit"; // Trỏ tới file service-edit.html
     }
 
-    // 3. Xử lý lưu dịch vụ (Dùng chung cho cả Thêm mới và Cập nhật)
+    // 4. Xử lý lưu dịch vụ chung (cho cả thêm mới và cập nhật)
     @PostMapping("/save")
     public String saveService(@ModelAttribute("service") UtilityService service, RedirectAttributes redirectAttributes) {
         serviceManager.saveService(service);
@@ -46,7 +46,7 @@ public class ServiceController {
         return "redirect:/services";
     }
 
-    // 4. Xóa dịch vụ có bắt lỗi ràng buộc khóa ngoại khi đã được dùng trong hóa đơn
+    // 5. Xóa dịch vụ có bắt lỗi ràng buộc khóa ngoại khi đã được dùng trong hóa đơn
     @GetMapping("/delete/{id}")
     public String deleteService(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

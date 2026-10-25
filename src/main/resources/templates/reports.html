@@ -5,6 +5,29 @@
     <title>Báo Cáo Doanh Thu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- CSS tùy chỉnh khi In / Xuất PDF -->
+    <style>
+        @media print {
+            /* Ẩn sidebar, nút bấm và các thành phần không cần thiết khi in */
+            #sidebar, .btn, .no-print {
+                display: none !important;
+            }
+            /* Đưa nội dung chính trải rộng toàn màn hình giấy */
+            main {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            body {
+                background-color: white !important;
+            }
+            .card {
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -14,9 +37,7 @@
         <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse text-white min-vh-100 p-3">
             <h4 class="text-center py-3 text-warning border-bottom border-secondary">QUẢN LÝ TRỌ</h4>
             <ul class="nav flex-column mt-3">
-                <!-- Cập nhật trỏ về /admin -->
                 <li class="nav-item mb-2"><a th:href="@{/admin}" class="nav-link text-white"><i class="bi bi-speedometer2 me-2"></i> Tổng quan</a></li>
-                <!-- Cập nhật trỏ về /admin/rooms -->
                 <li class="nav-item mb-2"><a th:href="@{/admin/rooms}" class="nav-link text-white"><i class="bi bi-door-open me-2"></i> Quản lý Phòng</a></li>
                 <li class="nav-item mb-2"><a th:href="@{/tenants}" class="nav-link text-white"><i class="bi bi-people me-2"></i> Khách Thuê</a></li>
                 <li class="nav-item mb-2"><a th:href="@{/contracts}" class="nav-link text-white"><i class="bi bi-file-earmark-text me-2"></i> Hợp Đồng</a></li>
@@ -30,6 +51,11 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2 text-primary fw-bold"><i class="bi bi-bar-chart-line"></i> Báo Cáo Doanh Thu</h1>
+                
+                <!-- NÚT IN / XUẤT PDF -->
+                <button onclick="window.print()" class="btn btn-dark shadow-sm">
+                    <i class="bi bi-printer me-1"></i> In / Lưu PDF báo cáo
+                </button>
             </div>
 
             <!-- Các thẻ tổng hợp con số -->

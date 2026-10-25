@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi Tiết Phòng Trọ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-warning" href="/"><i class="bi bi-house-heart-fill me-2"></i> PHÒNG TRỌ SINH VIÊN / CAO CẤP</a>
+        <div class="ms-auto">
+            <a th:href="@{/}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left me-1"></i> Quay lại danh sách</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Nội dung chi tiết phòng -->
+<div class="container my-5" style="max-width: 900px;">
+    <div class="card shadow-sm border-0">
+        <!-- Hình ảnh lớn của phòng -->
+        <img th:src="${room.imageUrl != null ? room.imageUrl : 'https://via.placeholder.com/800x400?text=Chi+Tiet+Phong+Tro'}" 
+             class="card-img-top" alt="Ảnh phòng trọ" style="max-height: 400px; object-fit: cover;">
+        
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="text-primary fw-bold mb-0" th:text="${'Phòng số: ' + room.roomNumber}">P101</h2>
+                <h3 class="text-danger fw-bold mb-0" th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ / tháng'}">1,500,000 đ</h3>
+            </div>
+            
+            <hr>
+
+            <h5 class="text-secondary fw-bold mb-3"><i class="bi bi-info-circle me-2"></i> Thông số chi tiết</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold"><i class="bi bi-aspect-ratio me-2 text-primary"></i> Diện tích phòng:</span>
+                            <span th:text="${room.roomArea != null ? room.roomArea + ' m²' : 'Đang cập nhật'}">20 m²</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold"><i class="bi bi-water me-2 text-primary"></i> Diện tích phòng tắm:</span>
+                            <span th:text="${room.bathroomArea != null ? room.bathroomArea + ' m²' : 'Đang cập nhật'}">3.5 m²</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">
+                                <i class="bi bi-snow me-2 text-primary"></i> Máy lạnh:
+                            </span>
+                            
+                            <span class="badge" 
+                                th:classappend="${room.hasAc == true ? 'bg-success' : 'bg-secondary'}"
+                                th:text="${room.hasAc == true 
+                                    ? 'Có sẵn máy lạnh' 
+                                    : (room.hasAc == false ? 'Không có' : 'Chưa cập nhật')}">
+                                Chưa cập nhật
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold"><i class="bi bi-building me-2 text-primary"></i> Vị trí tầng:</span>
+                            <span th:text="${room.floorNumber != null ? 'Tầng ' + room.floorNumber : 'Tầng 1'}">Tầng 1</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold"><i class="bi bi-lightning-charge me-2 text-warning"></i> Giá điện:</span>
+                            <span>3.500 đ / kWh</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold"><i class="bi bi-droplet me-2 text-info"></i> Giá nước:</span>
+                            <span>20.000 đ / m³</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Mô tả chi tiết phòng & phòng tắm -->
+            <div class="mb-4">
+                <h5 class="text-secondary fw-bold mb-2"><i class="bi bi-card-text me-2"></i> Mô tả không gian</h5>
+                <p class="text-muted" th:text="${room.description}">Phòng rộng rãi, thoáng mát, cửa sổ lớn.</p>
+                <p class="text-muted"><strong class="text-dark">Chi tiết phòng tắm:</strong> <span th:text="${room.bathroomDesc != null ? room.bathroomDesc : 'Phòng tắm khép kín, sạch sẽ, thiết bị vệ sinh hiện đại.'}">Khép kín</span></p>
+            </div>
+
+            <!-- Nút liên hệ thuê -->
+            <div class="text-center">
+                <button class="btn btn-success btn-lg px-5 shadow-sm" data-bs-toggle="modal" data-bs-target="#contactModal">
+                    <i class="bi bi-telephone-fill me-2"></i> Liên hệ thuê phòng ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal liên hệ -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i> Thông Tin Liên Hệ Chủ Trọ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="fs-5">Quý khách vui lòng liên hệ trực tiếp qua số điện thoại hoặc Zalo để xem phòng:</p>
+                <h3 class="text-success fw-bold mb-3"><i class="bi bi-telephone"></i> 0912.345.678</h3>
+                <p class="text-muted mb-0">Địa chỉ: Số 123, Đường ABC, Phường XYZ, TP.HCM</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

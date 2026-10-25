@@ -20,7 +20,6 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    // 1. Hiển thị trang danh sách phòng trọ
     @GetMapping
     public String viewRooms(
             @RequestParam(required = false) String keyword,
@@ -38,22 +37,19 @@ public class RoomController {
         return "rooms";
     }
 
-    // 2. Hiển thị form thêm mới phòng trọ
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("room", new Room());
-        return "room-form";
+        return "room-add";
     }
 
-    // 5. MỚI: Hiển thị form cập nhật thông tin phòng trọ theo ID
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Room room = roomService.getRoomById(id); // Lấy thông tin phòng hiện tại
+        Room room = roomService.getRoomById(id);
         model.addAttribute("room", room);
-        return "room-form"; // Dùng chung file giao diện room-form.html
+        return "room-edit";
     }
 
-    // 3. Xử lý lưu phòng trọ (Dùng chung cho cả Thêm mới và Cập nhật)
     @PostMapping("/save")
     public String saveRoom(@ModelAttribute("room") Room room, RedirectAttributes redirectAttributes) {
         roomService.saveRoom(room);
@@ -61,7 +57,6 @@ public class RoomController {
         return "redirect:/admin/rooms";
     }
 
-    // 4. Xóa phòng trọ theo ID có bắt lỗi ràng buộc khóa ngoại
     @GetMapping("/delete/{id}")
     public String deleteRoom(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

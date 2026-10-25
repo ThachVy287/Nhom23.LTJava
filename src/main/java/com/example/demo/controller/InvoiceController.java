@@ -27,24 +27,24 @@ public class InvoiceController {
         return "invoices"; // Trỏ tới file invoices.html
     }
 
-    // 2. Hiển thị form lập hóa đơn mới
+    // 2. Hiển thị form THÊM MỚI hóa đơn
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("invoice", new Invoice());
         model.addAttribute("rooms", roomService.getAllRooms());
-        return "invoice-form"; // Trỏ tới file invoice-form.html
+        return "invoice-add"; // Trỏ tới file invoice-add.html
     }
 
-    // 5. MỚI: Hiển thị form cập nhật (Sửa) hóa đơn theo ID
+    // 3. Hiển thị form CẬP NHẬT hóa đơn theo ID
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Invoice invoice = invoiceService.getInvoiceById(id); // Lấy thông tin hóa đơn hiện tại
+        Invoice invoice = invoiceService.getInvoiceById(id);
         model.addAttribute("invoice", invoice);
         model.addAttribute("rooms", roomService.getAllRooms());
-        return "invoice-form"; // Dùng chung file invoice-form.html
+        return "invoice-edit"; // Trỏ tới file invoice-edit.html
     }
 
-    // 3. Xử lý lưu hóa đơn (Dùng chung cho cả Thêm mới và Cập nhật)
+    // 4. Xử lý lưu hóa đơn chung (cho cả thêm mới và cập nhật)
     @PostMapping("/save")
     public String saveInvoice(@ModelAttribute("invoice") Invoice invoice, RedirectAttributes redirectAttributes) {
         invoiceService.saveInvoice(invoice);
@@ -52,7 +52,7 @@ public class InvoiceController {
         return "redirect:/invoices";
     }
 
-    // 4. Xóa hóa đơn có bắt lỗi ràng buộc khóa ngoại
+    // 5. Xóa hóa đơn có bắt lỗi ràng buộc khóa ngoại
     @GetMapping("/delete/{id}")
     public String deleteInvoice(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

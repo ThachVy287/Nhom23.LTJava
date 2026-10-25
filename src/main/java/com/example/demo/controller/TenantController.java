@@ -27,24 +27,24 @@ public class TenantController {
         return "tenants"; // Trỏ tới file tenants.html
     }
 
-    // 2. Hiển thị form thêm mới khách thuê
+    // 2. Hiển thị form THÊM MỚI khách thuê
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("tenant", new Tenant());
         model.addAttribute("rooms", roomService.getAllRooms());
-        return "tenant-form"; // Trỏ tới file tenant-form.html
+        return "tenant-add"; // Trỏ tới file tenant-add.html
     }
 
-    // 5. Hiển thị form cập nhật (Sửa) thông tin khách thuê theo ID
+    // 3. Hiển thị form CẬP NHẬT khách thuê theo ID
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Tenant tenant = tenantService.getTenantById(id); // Lấy thông tin khách thuê hiện tại
+        Tenant tenant = tenantService.getTenantById(id);
         model.addAttribute("tenant", tenant);
-        model.addAttribute("rooms", roomService.getAllRooms()); // Danh sách phòng để đổi/chọn lại
-        return "tenant-form"; // Dùng chung file tenant-form.html
+        model.addAttribute("rooms", roomService.getAllRooms());
+        return "tenant-edit"; // Trỏ tới file tenant-edit.html
     }
 
-    // 3. Xử lý lưu khách thuê (Dùng chung cho cả Thêm mới và Cập nhật)
+    // 4. Xử lý lưu khách thuê chung (cho cả thêm mới và cập nhật)
     @PostMapping("/save")
     public String saveTenant(@ModelAttribute("tenant") Tenant tenant, RedirectAttributes redirectAttributes) {
         tenantService.saveTenant(tenant);
@@ -52,14 +52,13 @@ public class TenantController {
         return "redirect:/tenants";
     }
 
-    // 4. Xóa khách thuê có bắt lỗi ràng buộc khóa ngoại
+    // 5. Xóa khách thuê có bắt lỗi ràng buộc khóa ngoại
     @GetMapping("/delete/{id}")
     public String deleteTenant(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             tenantService.deleteTenant(id);
             redirectAttributes.addFlashAttribute("successMessage", "Xóa khách thuê thành công!");
         } catch (DataIntegrityViolationException e) {
-            // Bắt lỗi khi khách đang dính khóa ngoại ở bảng Hợp Đồng (contracts)
             redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa khách thuê này vì đang có Hợp Đồng thuê phòng liên quan! Vui lòng thanh lý hợp đồng trước.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi khi xóa khách thuê!");
