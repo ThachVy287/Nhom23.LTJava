@@ -23,6 +23,25 @@ public class TenantService {
     }
 
     public Tenant saveTenant(Tenant tenant) {
+        // Trường hợp THÊM MỚI (id == null)
+        if (tenant.getId() == null) {
+            if (tenantRepository.existsByPhone(tenant.getPhone())) {
+                throw new RuntimeException("Số điện thoại này đã tồn tại trong hệ thống!");
+            }
+            if (tenantRepository.existsByCccd(tenant.getCccd())) {
+                throw new RuntimeException("Số CCCD này đã tồn tại trong hệ thống!");
+            }
+        } 
+        // Trường hợp CẬP NHẬT (id != null)
+        else {
+            if (tenantRepository.existsByPhoneAndIdNot(tenant.getPhone(), tenant.getId())) {
+                throw new RuntimeException("Số điện thoại này đã được sử dụng bởi khách thuê khác!");
+            }
+            if (tenantRepository.existsByCccdAndIdNot(tenant.getCccd(), tenant.getId())) {
+                throw new RuntimeException("Số CCCD này đã được sử dụng bởi khách thuê khác!");
+            }
+        }
+
         return tenantRepository.save(tenant);
     }
 

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -51,11 +52,24 @@ public class RoomController {
     }
 
     @PostMapping("/save")
-    public String saveRoom(@ModelAttribute("room") Room room, RedirectAttributes redirectAttributes) {
-        roomService.saveRoom(room);
-        redirectAttributes.addFlashAttribute("successMessage", "Lưu thông tin phòng thành công!");
-        return "redirect:/admin/rooms";
-    }
+    public String saveRoom(
+        @ModelAttribute("room") Room room, 
+        @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles, 
+        RedirectAttributes redirectAttributes) {
+            try {
+                roomService.saveRoomWithImages(room, imageFiles);
+                redirectAttributes.addFlashAttribute("successMessage", "Lưu thông tin phòng thành công!");
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+                // Nếu thêm mới lỗi -> quay về form add, nếu cập nhật lỗi -> quay về form edit
+                if (room.getId() == null) {
+                    return "redirect:/admin/rooms/add";
+                } else {
+                    return "redirect:/admin/rooms/edit/" + room.getId();
+                }
+            }
+            return "redirect:/admin/rooms";
+        }
 
     @GetMapping("/delete/{id}")
     public String deleteRoom(@PathVariable Long id, RedirectAttributes redirectAttributes) {

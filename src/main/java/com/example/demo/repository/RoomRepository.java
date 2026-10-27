@@ -9,12 +9,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
     
-    // Tìm kiếm theo số phòng (gần đúng) có phân trang
     Page<Room> findByRoomNumberContainingIgnoreCase(String roomNumber, Pageable pageable);
-
-    // Lọc theo trạng thái có phân trang
     Page<Room> findByStatus(String status, Pageable pageable);
-
-    // Vừa tìm kiếm theo tên vừa lọc theo trạng thái có phân trang
     Page<Room> findByRoomNumberContainingIgnoreCaseAndStatus(String roomNumber, String status, Pageable pageable);
+
+    boolean existsByRoomNumber(String roomNumber);
+    boolean existsByRoomNumberAndIdNot(String roomNumber, Long id);
+
+    // --- BỔ SUNG CHO TRANG CHỦ CÔNG KHAI (Tìm kiếm & Phân trang các phòng đang trống) ---
+    Page<Room> findByStatusAndRoomNumberContainingIgnoreCase(String status, String roomNumber, Pageable pageable);
 }

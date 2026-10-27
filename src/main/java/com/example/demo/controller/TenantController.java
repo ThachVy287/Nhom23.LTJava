@@ -47,8 +47,18 @@ public class TenantController {
     // 4. Xử lý lưu khách thuê chung (cho cả thêm mới và cập nhật)
     @PostMapping("/save")
     public String saveTenant(@ModelAttribute("tenant") Tenant tenant, RedirectAttributes redirectAttributes) {
-        tenantService.saveTenant(tenant);
-        redirectAttributes.addFlashAttribute("successMessage", "Lưu thông tin khách thuê thành công!");
+        try {
+            tenantService.saveTenant(tenant);
+            redirectAttributes.addFlashAttribute("successMessage", "Lưu thông tin khách thuê thành công!");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            // Nếu là thêm mới, quay lại trang add; nếu là sửa, quay lại trang edit theo id
+            if (tenant.getId() == null) {
+                return "redirect:/tenants/add";
+            } else {
+                return "redirect:/tenants/edit/" + tenant.getId();
+            }
+        }
         return "redirect:/tenants";
     }
 

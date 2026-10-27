@@ -11,7 +11,14 @@
         <div class="card-body p-4">
             <h3 class="mb-4 text-center text-success">Thêm Phòng Trọ Mới</h3>
             
-            <form th:action="@{/admin/rooms/save}" th:object="${room}" method="post">
+            <!-- Hiển thị thông báo lỗi nếu có -->
+             <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- QUAN TRỌNG: Thêm enctype="multipart/form-data" để upload file -->
+            <form th:action="@{/admin/rooms/save}" th:object="${room}" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label class="form-label fw-bold">Số phòng:</label>
                     <input type="text" th:field="*{roomNumber}" class="form-control" required placeholder="Nhập số phòng (VD: P101)">
@@ -44,8 +51,9 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Link hoặc tên file hình ảnh:</label>
-                    <input type="text" th:field="*{imageUrl}" class="form-control" placeholder="VD: /images/p101.jpg hoặc link URL ảnh">
+                    <label class="form-label fw-bold">Chọn hình ảnh phòng (Chọn ít nhất 4 hình):</label>
+                    <input type="file" name="imageFiles" class="form-control" multiple accept="image/*" required>
+                    <div class="form-text text-muted">Giữ phím Ctrl hoặc Shift để chọn đồng thời nhiều hình ảnh từ máy tính.</div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Trạng thái:</label>

@@ -6,8 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List; // Nhớ import thư viện List
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RoomService {
@@ -15,12 +22,10 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
-    // Bổ sung phương thức này để lấy toàn bộ danh sách phòng (Dùng cho Dashboard và Tenant form)
     public List<Room> getAllRooms() {
         return roomRepository.findAll();
     }
 
-    // Lấy danh sách phòng có hỗ trợ Tìm kiếm, Lọc và Phân trang (Dùng cho trang rooms)
     public Page<Room> getRooms(String keyword, String status, Pageable pageable) {
         if (keyword != null && !keyword.isEmpty() && status != null && !status.isEmpty()) {
             return roomRepository.findByRoomNumberContainingIgnoreCaseAndStatus(keyword, status, pageable);
@@ -33,19 +38,70 @@ public class RoomService {
         }
     }
 
-    // Lấy thông tin 1 phòng theo ID
     public Room getRoomById(Long id) {
         return roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng trọ có ID: " + id));
     }
 
-    // Lưu hoặc cập nhật phòng trọ
-    public Room saveRoom(Room room) {
-        return roomRepository.save(room);
+    // Xử lý lưu phòng kèm upload nhiều hình ảnh và kiểm tra trùng lặp số phòng
+    public void saveRoomWithImages(Room room, MultipartFile[] imageFiles) throws IOException {
+        
+        // --- KIỂM TRA RÀNG BUỘC TRÙNG SỐ PHÒNG ---
+        if (room.getId() == null) {
+            // Thêm mới
+            if (roomRepository.existsByRoomNumber(room.getRoomNumber())) {
+                throw new RuntimeException("Số phòng '" + room.getRoomNumber() + "' đã tồn tại trong hệ thống!");
+            }
+        } else {
+            // Cập nhật
+            if (roomRepository.existsByRoomNumberAndIdNot(room.getRoomNumber(), room.getId())) {
+                throw new RuntimeException("Số phòng '" + room.getRoomNumber() + "' đã thuộc về một phòng khác!");
+            }
+        }
+
+        List<String> pathList = new ArrayList<>();
+        
+        // 1. Giữ lại các ảnh cũ mà người dùng chưa bấm xóa
+        if (room.getImageUrls() != null && !room.getImageUrls().isEmpty()) {
+            for (String img : room.getImageUrls().split(",")) {
+                if (!img.trim().isEmpty()) {
+                    pathList.add(img.trim());
+                }
+            }
+        }
+
+        // 2. Tải lên và thêm các ảnh mới chọn từ thư mục máy tính
+        String uploadDir = "src/main/resources/static/images/";
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        if (imageFiles != null && imageFiles.length > 0) {
+            for (MultipartFile file : imageFiles) {
+                if (!file.isEmpty()) {
+                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                    Path filePath = Paths.get(uploadDir + fileName);
+                    Files.write(filePath, file.getBytes());
+                    pathList.add("/images/" + fileName);
+                }
+            }
+        }
+
+        // Gộp lại thành chuỗi phân cách bằng dấu phẩy lưu vào database
+        room.setImageUrls(String.join(",", pathList));
+        roomRepository.save(room);
     }
 
-    // Xóa phòng trọ theo ID
     public void deleteRoom(Long id) {
         roomRepository.deleteById(id);
+    }
+    
+    public Page<Room> getAvailableRoomsForPublic(String keyword, Pageable pageable) {
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return roomRepository.findByStatusAndRoomNumberContainingIgnoreCase("TRONG", keyword.trim(), pageable);
+        } else {
+            return roomRepository.findByStatus("TRONG", pageable);
+        }
     }
 }

@@ -22,11 +22,13 @@
         <form th:action="@{/login}" method="post">
             <div class="mb-3">
                 <label class="form-label fw-bold">Tên đăng nhập:</label>
-                <input type="text" name="username" class="form-control" required placeholder="Nhập admin">
+                <!-- Đã đổi placeholder thành hướng dẫn chung -->
+                <input type="text" name="username" class="form-control" required placeholder="Nhập tên tài khoản...">
             </div>
             <div class="mb-3">
                 <label class="form-label fw-bold">Mật khẩu:</label>
-                <input type="password" name="password" class="form-control" required placeholder="Nhập 123456">
+                <!-- Đã đổi placeholder thành hướng dẫn chung -->
+                <input type="password" name="password" class="form-control" required placeholder="Nhập mật khẩu...">
             </div>
             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Đăng Nhập</button>
         </form>

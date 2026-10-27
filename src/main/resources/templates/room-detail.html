@@ -20,12 +20,22 @@
 
 <!-- Nội dung chi tiết phòng -->
 <div class="container my-5" style="max-width: 900px;">
-    <div class="card shadow-sm border-0">
-        <!-- Hình ảnh lớn của phòng -->
-        <img th:src="${room.imageUrl != null ? room.imageUrl : 'https://via.placeholder.com/800x400?text=Chi+Tiet+Phong+Tro'}" 
-             class="card-img-top" alt="Ảnh phòng trọ" style="max-height: 400px; object-fit: cover;">
+    <div class="card shadow-sm border-0 p-4">
         
-        <div class="card-body p-4">
+        <!-- HIỂN THỊ ALBUM HÌNH ẢNH (LƯỚI 4 ẢNH) -->
+        <div class="mb-4">
+            <h5 class="text-secondary fw-bold mb-3"><i class="bi bi-images me-2"></i> Hình ảnh thực tế phòng trọ</h5>
+            <div class="row g-3" th:if="${room.imageUrls != null and !room.imageUrls.isEmpty()}">
+                <div class="col-md-3 col-6" th:each="img : ${room.imageUrls.split(',')}">
+                    <img th:src="${img}" class="img-fluid rounded shadow-sm border" alt="Ảnh phòng" style="height: 160px; width: 100%; object-fit: cover;">
+                </div>
+            </div>
+            <div th:if="${room.imageUrls == null or room.imageUrls.isEmpty()}" class="text-center py-3 bg-white rounded border">
+                <p class="text-muted mb-0">Chưa có hình ảnh nào được tải lên.</p>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="text-primary fw-bold mb-0" th:text="${'Phòng số: ' + room.roomNumber}">P101</h2>
                 <h3 class="text-danger fw-bold mb-0" th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ / tháng'}">1,500,000 đ</h3>
@@ -46,17 +56,9 @@
                             <span th:text="${room.bathroomArea != null ? room.bathroomArea + ' m²' : 'Đang cập nhật'}">3.5 m²</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold">
-                                <i class="bi bi-snow me-2 text-primary"></i> Máy lạnh:
-                            </span>
-                            
-                            <span class="badge" 
-                                th:classappend="${room.hasAc == true ? 'bg-success' : 'bg-secondary'}"
-                                th:text="${room.hasAc == true 
-                                    ? 'Có sẵn máy lạnh' 
-                                    : (room.hasAc == false ? 'Không có' : 'Chưa cập nhật')}">
-                                Chưa cập nhật
-                            </span>
+                            <span class="fw-bold"><i class="bi bi-snow me-2 text-primary"></i> Máy lạnh:</span>
+                            <span class="badge" th:classappend="${room.hasAc == true ? 'bg-success' : 'bg-secondary'}" 
+                                  th:text="${room.hasAc == true ? 'Có sẵn máy lạnh' : 'Không có'}">Có sẵn máy lạnh</span>
                         </li>
                     </ul>
                 </div>

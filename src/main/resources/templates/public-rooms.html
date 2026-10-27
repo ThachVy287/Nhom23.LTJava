@@ -13,7 +13,7 @@
     <div class="container">
         <a class="navbar-brand fw-bold text-warning" href="#"><i class="bi bi-house-heart-fill me-2"></i> PHÒNG TRỌ SINH VIÊN / CAO CẤP</a>
         <div class="ms-auto">
-            <a th:href="@{/admin}" class="btn btn-outline-light btn-sm"><i class="bi bi-lock me-1"></i> Quản trị viên (Chủ trọ)</a>
+            <a th:href="@{/login}" class="btn btn-outline-light btn-sm"><i class="bi bi-lock me-1"></i> Quản trị viên (Chủ trọ)</a>
         </div>
     </div>
 </nav>
@@ -26,63 +26,73 @@
     </div>
 </div>
 
-<!-- Nội dung danh sách phòng trống -->
+<!-- Nội dung chính -->
 <div class="container mb-5">
-    <h3 class="mb-4 text-secondary fw-bold"><i class="bi bi-door-open"></i> Phòng Trọ Đang Trống (<span th:text="${#lists.size(rooms)}">0</span>)</h3>
+    
+    <!-- THANH TÌM KIẾM -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <form th:action="@{/}" method="get" class="input-group shadow-sm">
+                <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Nhập số phòng cần tìm (VD: P101)...">
+                <button class="btn btn-dark px-4" type="submit"><i class="bi bi-search"></i> Tìm kiếm</button>
+                <a th:if="${keyword != null and !keyword.isEmpty()}" th:href="@{/}" class="btn btn-outline-secondary">Làm mới</a>
+            </form>
+        </div>
+    </div>
+
+    <h3 class="mb-4 text-secondary fw-bold"><i class="bi bi-door-open"></i> Phòng Trọ Đang Trống (<span th:text="${roomPage.totalElements}">0</span>)</h3>
 
     <div class="row g-4">
-    <!-- Duyệt qua danh sách phòng trống -->
-    <div class="col-md-4" th:each="room : ${rooms}">
-        <div class="card h-100 shadow-sm border-0">
-            <!-- Hiển thị hình ảnh phòng -->
-            <img th:src="${room.imageUrl != null ? room.imageUrl : 'https://via.placeholder.com/400x250?text=Phong+Tro'}" 
-                 class="card-img-top" alt="Hình ảnh phòng" style="height: 200px; object-fit: cover;">
-            
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title text-primary fw-bold mb-0" th:text="${room.roomNumber}">P102</h4>
-                    <span class="badge bg-success">Còn trống</span>
+        <!-- Duyệt qua danh sách phòng trống -->
+        <div class="col-md-4" th:each="room : ${rooms}">
+            <div class="card h-100 shadow-sm border-0">
+                <img th:src="${room.imageUrls != null and !room.imageUrls.isEmpty() ? room.imageUrls.split(',')[0] : 'https://via.placeholder.com/400x250?text=Phong+Tro'}" 
+                     class="card-img-top" alt="Hình ảnh phòng" style="height: 200px; object-fit: cover;">
+                
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="card-title text-primary fw-bold mb-0" th:text="${room.roomNumber}">P102</h4>
+                        <span class="badge bg-success">Còn trống</span>
+                    </div>
+                    <h5 class="text-danger fw-bold mb-3" th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' đ / tháng'}">1,800,000 đ / tháng</h5>
+                    <p class="card-text text-muted" th:text="${room.description}">Phòng rộng rãi, có gác xép, cửa sổ thoáng mát.</p>
                 </div>
-                <h5 class="text-danger fw-bold mb-3" th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' đ / tháng'}">1,800,000 đ / tháng</h5>
-                <p class="card-text text-muted" th:text="${room.description}">Phòng rộng rãi, có gác xép, cửa sổ thoáng mát.</p>
-            </div>
-            
-            <div class="card-footer bg-white border-top-0 pb-3">
-                <!-- Nút bấm chuyển sang trang chi tiết -->
-                <a th:href="@{/rooms/detail/{id}(id=${room.id})}" class="btn btn-primary w-100">
-                    <i class="bi bi-eye-fill me-2"></i> Xem chi tiết phòng
-                </a>
+                
+                <div class="card-footer bg-white border-top-0 pb-3">
+                    <a th:href="@{/rooms/detail/{id}(id=${room.id})}" class="btn btn-primary w-100">
+                        <i class="bi bi-eye-fill me-2"></i> Xem chi tiết phòng
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-        <!-- Thông báo nếu hết phòng -->
+        <!-- Thông báo nếu hết phòng hoặc không tìm thấy -->
         <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(rooms)}">
             <i class="bi bi-emoji-frown fs-1 text-muted"></i>
-            <h4 class="text-muted mt-3">Rất tiếc, hiện tại tất cả các phòng đã được thuê hết!</h4>
+            <h4 class="text-muted mt-3">Không tìm thấy phòng trọ phù hợp!</h4>
         </div>
     </div>
-</div>
 
-<!-- Modal thông tin liên hệ chủ trọ -->
-<div class="modal fade" id="contactModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i> Thông Tin Liên Hệ Chủ Trọ</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center py-4">
-                <p class="fs-5">Quý khách vui lòng liên hệ trực tiếp qua số điện thoại hoặc Zalo để xem phòng:</p>
-                <h3 class="text-success fw-bold mb-3"><i class="bi bi-telephone"></i> 0912.345.678</h3>
-                <p class="text-muted mb-0">Địa chỉ: Số 123, Đường ABC, Phường XYZ, TP.HCM</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-            </div>
-        </div>
-    </div>
+    <!-- THANH PHÂN TRANG (PAGINATION) -->
+    <nav th:if="${roomPage.totalPages > 1}" class="mt-5">
+        <ul class="pagination justify-content-center">
+            <!-- Nút Previous -->
+            <li class="page-item" th:classappend="${roomPage.first ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/(page=${roomPage.number - 1}, keyword=${keyword})}">Trước</a>
+            </li>
+
+            <!-- Các số trang -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, roomPage.totalPages - 1)}" th:classappend="${i == roomPage.number ? 'active' : ''}">
+                <a class="page-link" th:href="@{/(page=${i}, keyword=${keyword})}" th:text="${i + 1}">1</a>
+            </li>
+
+            <!-- Nút Next -->
+            <li class="page-item" th:classappend="${roomPage.last ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/(page=${roomPage.number + 1}, keyword=${keyword})}">Sau</a>
+            </li>
+        </ul>
+    </nav>
+
 </div>
 
 <!-- Bootstrap JS -->
