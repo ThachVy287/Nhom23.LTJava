@@ -1,101 +1,1456 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Danh Sách Phòng Trọ Cho Thuê</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Phòng Trọ Cho Thuê - Tìm Phòng Trọ</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="bg-light">
 
-<!-- Navbar phía trên dành cho khách -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold text-warning" href="#"><i class="bi bi-house-heart-fill me-2"></i> PHÒNG TRỌ SINH VIÊN / CAO CẤP</a>
+    <style>
+        :root {
+            --primary: #244a76;
+            --primary-dark: #173653;
+            --accent: #e5a44b;
+            --background: #f5f7fa;
+            --text: #27364b;
+            --muted: #7b8796;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        /* NAVBAR */
+        .main-navbar {
+            background: #fff;
+            border-bottom: 1px solid #e9edf2;
+        }
+
+        .navbar-brand {
+            color: var(--primary) !important;
+            font-size: 19px;
+            letter-spacing: 0.3px;
+        }
+
+        .brand-icon {
+            color: var(--accent);
+            font-size: 25px;
+        }
+
+        /* LOCATION BAR */
+        .location-section {
+            background: #fff;
+            border-bottom: 1px solid #e9edf2;
+            padding: 17px 0;
+        }
+
+        .location-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .location-icon {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff0ed;
+            color: #dc3545;
+            border-radius: 12px;
+            font-size: 23px;
+        }
+
+        .location-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .location-address {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .location-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 17px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .location-button:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        /* HERO */
+        .hero-section {
+            background: linear-gradient(125deg, #173653, #315f8e 65%, #497ba7);
+            color: white;
+            padding: 75px 0 85px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before,
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .hero-section::before {
+            width: 350px;
+            height: 350px;
+            top: -170px;
+            right: -60px;
+        }
+
+        .hero-section::after {
+            width: 240px;
+            height: 240px;
+            bottom: -150px;
+            left: -80px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.25;
+            font-weight: 800;
+        }
+
+        .hero-description {
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 17px;
+            max-width: 650px;
+            margin: 16px auto 0;
+            line-height: 1.7;
+        }
+
+        .hero-address {
+            color: #ffe3ad;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 17px;
+        }
+
+        .hero-button {
+            background: var(--accent);
+            color: #25354a;
+            font-weight: 700;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+        }
+
+        .hero-button:hover {
+            background: #f0b75f;
+            color: #25354a;
+        }
+
+        /* FEATURES */
+        .feature-section {
+            margin-top: -35px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-card {
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(33, 52, 77, 0.07);
+        }
+
+        .feature-icon {
+            width: 43px;
+            height: 43px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #edf3fa;
+            color: var(--primary);
+            font-size: 21px;
+            border-radius: 10px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .feature-description {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 0;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            padding-top: 55px;
+            padding-bottom: 70px;
+        }
+
+        .section-title {
+            color: var(--text);
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        .section-description {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* SEARCH AND FILTER */
+        .search-card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 4px 18px rgba(33, 52, 77, 0.06);
+        }
+
+        .search-card .form-label {
+            color: #495057;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .filter-input {
+            height: 46px;
+            border-radius: 8px;
+            border-color: #dfe5ed;
+        }
+
+        .filter-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(36, 74, 118, 0.12);
+        }
+
+        .search-button {
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            padding: 11px 22px;
+            font-weight: 700;
+        }
+
+        .search-button:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .reset-button {
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-weight: 600;
+        }
+
+        .filter-hint {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* ROOM CARD */
+        .room-card {
+            border: none;
+            border-radius: 13px;
+            overflow: hidden;
+            background: white;
+            height: 100%;
+            box-shadow: 0 3px 15px rgba(33, 52, 77, 0.06);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(33, 52, 77, 0.13);
+        }
+
+        .room-image-wrapper {
+            position: relative;
+            height: 225px;
+            overflow: hidden;
+            background: #e9eef4;
+        }
+
+        .room-image {
+            width: 100%;
+            height: 225px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s;
+        }
+
+        .room-card:hover .room-image {
+            transform: scale(1.05);
+        }
+
+        .room-image-placeholder {
+            width: 100%;
+            height: 225px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #8593a5;
+            background: #e9eef4;
+        }
+
+        .room-image-placeholder i {
+            font-size: 45px;
+        }
+
+        .room-status {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            background: #198754;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .room-card-body {
+            padding: 20px;
+        }
+
+        .room-number {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 23px;
+            margin-bottom: 7px;
+        }
+
+        .room-price {
+            color: #dc3545;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .room-price-label {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        .room-location {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            color: #667487;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 13px;
+            margin-bottom: 12px;
+        }
+
+        .room-location i {
+            color: #dc3545;
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .room-description {
+            color: #6c7888;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 45px;
+            margin-top: 12px;
+            margin-bottom: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .room-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            padding-top: 13px;
+            border-top: 1px solid #edf0f4;
+            color: #667487;
+            font-size: 13px;
+        }
+
+        .room-meta span {
+            white-space: nowrap;
+        }
+
+        .room-meta i {
+            color: var(--primary);
+            margin-right: 4px;
+        }
+
+        .room-card-footer {
+            padding: 0 20px 20px;
+            background: white;
+            border: none;
+        }
+
+        .detail-button {
+            background: var(--primary);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 11px;
+            font-weight: 700;
+        }
+
+        .detail-button:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            background: white;
+            border-radius: 14px;
+            padding: 65px 20px;
+            border: 1px solid #edf0f4;
+        }
+
+        .empty-icon {
+            color: #b5c0ce;
+            font-size: 65px;
+        }
+
+        /* PAGINATION */
+        .pagination .page-link {
+            color: var(--primary);
+            border-radius: 7px;
+            margin: 0 3px;
+            border: 1px solid #e0e6ee;
+            min-width: 38px;
+            text-align: center;
+        }
+
+        .pagination .active .page-link {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* GOOGLE MAPS */
+        .map-section {
+            background: #fff;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 4px 18px rgba(33, 52, 77, 0.06);
+            margin-top: 55px;
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 380px;
+            border: 0;
+            border-radius: 11px;
+            display: block;
+        }
+
+        .map-address {
+            color: #667487;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        /* FOOTER */
+        .main-footer {
+            background: #173653;
+            color: white;
+            padding: 35px 0;
+        }
+
+        .footer-muted {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        .footer-address {
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .footer-map-link {
+            color: #ffd38b;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .footer-map-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 767px) {
+            .location-section {
+                padding: 13px 0;
+            }
+
+            .location-card {
+                align-items: flex-start;
+            }
+
+            .location-button {
+                width: 100%;
+            }
+
+            .hero-section {
+                padding: 55px 0 70px;
+            }
+
+            .hero-title {
+                font-size: 30px;
+            }
+
+            .hero-description {
+                font-size: 15px;
+            }
+
+            .main-content {
+                padding-top: 40px;
+            }
+
+            .section-title {
+                font-size: 23px;
+            }
+
+            .room-image-wrapper,
+            .room-image,
+            .room-image-placeholder {
+                height: 210px;
+            }
+
+            .map-section {
+                padding: 16px;
+                margin-top: 40px;
+            }
+
+            .map-frame {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg main-navbar sticky-top">
+
+    <div class="container py-2">
+
+        <a class="navbar-brand fw-bold d-flex align-items-center"
+           th:href="@{/}">
+
+            <i class="bi bi-house-heart-fill brand-icon me-2"></i>
+            PHÒNG TRỌ CHO THUÊ
+
+        </a>
+
         <div class="ms-auto">
-            <a th:href="@{/login}" class="btn btn-outline-light btn-sm"><i class="bi bi-lock me-1"></i> Quản trị viên (Chủ trọ)</a>
+
+            <a th:href="@{/login}"
+               class="btn btn-outline-primary">
+
+                <i class="bi bi-lock me-1"></i>
+                Quản trị viên
+
+            </a>
+
         </div>
+
     </div>
+
 </nav>
 
-<!-- Banner tiêu đề -->
-<div class="bg-primary text-white py-5 text-center mb-4 shadow-sm">
+<!-- ĐỊA CHỈ KHU TRỌ -->
+<section class="location-section"
+         th:if="${ownerAddress != null and !ownerAddress.isEmpty()}">
+
     <div class="container">
-        <h1 class="fw-bold">Tìm Phòng Trọ Ưng Ý Dễ Dàng</h1>
-        <p class="lead mb-0">Danh sách các phòng còn trống, giá cả minh bạch, không gian sạch sẽ thoáng mát.</p>
-    </div>
-</div>
 
-<!-- Nội dung chính -->
-<div class="container mb-5">
-    
-    <!-- THANH TÌM KIẾM -->
-    <div class="row mb-4">
-        <div class="col-md-6 mx-auto">
-            <form th:action="@{/}" method="get" class="input-group shadow-sm">
-                <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Nhập số phòng cần tìm (VD: P101)...">
-                <button class="btn btn-dark px-4" type="submit"><i class="bi bi-search"></i> Tìm kiếm</button>
-                <a th:if="${keyword != null and !keyword.isEmpty()}" th:href="@{/}" class="btn btn-outline-secondary">Làm mới</a>
-            </form>
-        </div>
-    </div>
+        <div class="location-card">
 
-    <h3 class="mb-4 text-secondary fw-bold"><i class="bi bi-door-open"></i> Phòng Trọ Đang Trống (<span th:text="${roomPage.totalElements}">0</span>)</h3>
+            <div class="d-flex align-items-center gap-3">
 
-    <div class="row g-4">
-        <!-- Duyệt qua danh sách phòng trống -->
-        <div class="col-md-4" th:each="room : ${rooms}">
-            <div class="card h-100 shadow-sm border-0">
-                <img th:src="${room.imageUrls != null and !room.imageUrls.isEmpty() ? room.imageUrls.split(',')[0] : 'https://via.placeholder.com/400x250?text=Phong+Tro'}" 
-                     class="card-img-top" alt="Hình ảnh phòng" style="height: 200px; object-fit: cover;">
-                
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="card-title text-primary fw-bold mb-0" th:text="${room.roomNumber}">P102</h4>
-                        <span class="badge bg-success">Còn trống</span>
+                <div class="location-icon">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+
+                <div>
+
+                    <div class="location-label">
+                        ĐỊA CHỈ KHU PHÒNG TRỌ
                     </div>
-                    <h5 class="text-danger fw-bold mb-3" th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' đ / tháng'}">1,800,000 đ / tháng</h5>
-                    <p class="card-text text-muted" th:text="${room.description}">Phòng rộng rãi, có gác xép, cửa sổ thoáng mát.</p>
+
+                    <p class="location-address"
+                       th:text="${ownerAddress}">
+                        Địa chỉ khu trọ
+                    </p>
+
                 </div>
-                
-                <div class="card-footer bg-white border-top-0 pb-3">
-                    <a th:href="@{/rooms/detail/{id}(id=${room.id})}" class="btn btn-primary w-100">
-                        <i class="bi bi-eye-fill me-2"></i> Xem chi tiết phòng
-                    </a>
-                </div>
+
             </div>
+
+            <a th:if="${ownerMapsUrl != null and !ownerMapsUrl.isEmpty()}"
+               th:href="${ownerMapsUrl}"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="location-button">
+
+                <i class="bi bi-map-fill"></i>
+                Xem vị trí trên Google Maps
+                <i class="bi bi-box-arrow-up-right"></i>
+
+            </a>
+
         </div>
 
-        <!-- Thông báo nếu hết phòng hoặc không tìm thấy -->
-        <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(rooms)}">
-            <i class="bi bi-emoji-frown fs-1 text-muted"></i>
-            <h4 class="text-muted mt-3">Không tìm thấy phòng trọ phù hợp!</h4>
-        </div>
     </div>
 
-    <!-- THANH PHÂN TRANG (PAGINATION) -->
-    <nav th:if="${roomPage.totalPages > 1}" class="mt-5">
-        <ul class="pagination justify-content-center">
-            <!-- Nút Previous -->
-            <li class="page-item" th:classappend="${roomPage.first ? 'disabled' : ''}">
-                <a class="page-link" th:href="@{/(page=${roomPage.number - 1}, keyword=${keyword})}">Trước</a>
+</section>
+
+<!-- HERO BANNER -->
+<section class="hero-section text-center">
+
+    <div class="container hero-content">
+
+        <span class="badge rounded-pill bg-warning text-dark px-3 py-2 mb-3">
+
+            <i class="bi bi-house-check me-1"></i>
+            Tìm phòng trọ dễ dàng
+
+        </span>
+
+        <h1 class="hero-title"
+            th:if="${ownerAddress != null and !ownerAddress.isEmpty()}">
+
+            Tìm Phòng Trọ Ưng Ý<br>
+            Tại Khu Trọ Của Chúng Tôi
+
+        </h1>
+
+        <h1 class="hero-title"
+            th:unless="${ownerAddress != null and !ownerAddress.isEmpty()}">
+
+            Tìm Phòng Trọ Ưng Ý<br>
+            Cho Cuộc Sống Của Bạn
+
+        </h1>
+
+        <p class="hero-description">
+
+            Khám phá danh sách phòng trọ đang còn trống,
+            thông tin rõ ràng, hình ảnh thực tế và giá thuê minh bạch.
+
+        </p>
+
+        <p class="hero-address"
+           th:if="${ownerAddress != null and !ownerAddress.isEmpty()}">
+
+            <i class="bi bi-geo-alt-fill me-2"></i>
+            <span th:text="${ownerAddress}">Địa chỉ khu trọ</span>
+
+        </p>
+
+        <a href="#room-list"
+           class="btn hero-button mt-4">
+
+            <i class="bi bi-search me-2"></i>
+            Khám phá phòng trọ
+
+        </a>
+
+    </div>
+
+</section>
+
+<!-- LỢI ÍCH -->
+<section class="feature-section">
+
+    <div class="container">
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+
+                <div class="feature-card d-flex align-items-center">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+
+                    <div>
+                        <h6 class="feature-title">
+                            Giá thuê minh bạch
+                        </h6>
+
+                        <p class="feature-description">
+                            Hiển thị rõ ràng giá thuê phòng hàng tháng.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="feature-card d-flex align-items-center">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-images"></i>
+                    </div>
+
+                    <div>
+                        <h6 class="feature-title">
+                            Hình ảnh thực tế
+                        </h6>
+
+                        <p class="feature-description">
+                            Xem hình ảnh và thông tin chi tiết phòng.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="feature-card d-flex align-items-center">
+
+                    <div class="feature-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+
+                    <div>
+                        <h6 class="feature-title">
+                            Vị trí rõ ràng
+                        </h6>
+
+                        <p class="feature-description">
+                            Biết địa chỉ khu trọ và xem đường đi trên bản đồ.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- MAIN CONTENT -->
+<main id="room-list" class="container main-content">
+
+    <!-- TIÊU ĐỀ DANH SÁCH -->
+    <div class="row align-items-end mb-4">
+
+        <div class="col-md-8">
+
+            <span class="text-primary fw-semibold small">
+                KHÁM PHÁ PHÒNG TRỌ
+            </span>
+
+            <h2 class="section-title mt-2 mb-2">
+                Phòng Trọ Đang Còn Trống
+            </h2>
+
+            <p class="section-description mb-0">
+
+                Tìm kiếm phòng phù hợp với nhu cầu của bạn.
+
+                <strong class="text-primary"
+                        th:text="${roomPage.totalElements + ' phòng đang còn trống'}">
+                    6 phòng đang còn trống
+                </strong>
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- THANH TÌM KIẾM, BỘ LỌC VÀ SẮP XẾP -->
+    <div class="search-card mb-4">
+
+        <form th:action="@{/}" method="get">
+
+            <input type="hidden"
+                   name="size"
+                   th:value="${roomPage.size}">
+
+            <div class="row g-3">
+
+                <!-- TÌM THEO MÃ PHÒNG -->
+                <div class="col-md-12">
+
+                    <label for="keyword" class="form-label">
+                        <i class="bi bi-search me-1 text-primary"></i>
+                        Tìm kiếm theo mã phòng
+                    </label>
+
+                    <input type="text"
+                           id="keyword"
+                           name="keyword"
+                           th:value="${keyword}"
+                           class="form-control filter-input"
+                           placeholder="Ví dụ: P101, P102...">
+
+                </div>
+
+                <!-- GIÁ THUÊ TỪ -->
+                <div class="col-md-6 col-lg-3">
+
+                    <label for="minPrice" class="form-label">
+                        Giá thuê từ (VNĐ/tháng)
+                    </label>
+
+                    <input type="number"
+                           id="minPrice"
+                           name="minPrice"
+                           min="0"
+                           step="any"
+                           th:value="${minPrice}"
+                           class="form-control filter-input"
+                           placeholder="Ví dụ: 1500000">
+
+                </div>
+
+                <!-- GIÁ THUÊ ĐẾN -->
+                <div class="col-md-6 col-lg-3">
+
+                    <label for="maxPrice" class="form-label">
+                        Giá thuê đến (VNĐ/tháng)
+                    </label>
+
+                    <input type="number"
+                           id="maxPrice"
+                           name="maxPrice"
+                           min="0"
+                           step="any"
+                           th:value="${maxPrice}"
+                           class="form-control filter-input"
+                           placeholder="Ví dụ: 3000000">
+
+                </div>
+
+                <!-- DIỆN TÍCH TỪ -->
+                <div class="col-md-6 col-lg-3">
+
+                    <label for="minArea" class="form-label">
+                        Diện tích từ (m²)
+                    </label>
+
+                    <input type="number"
+                           id="minArea"
+                           name="minArea"
+                           min="0"
+                           step="any"
+                           th:value="${minArea}"
+                           class="form-control filter-input"
+                           placeholder="Ví dụ: 15">
+
+                </div>
+
+                <!-- DIỆN TÍCH ĐẾN -->
+                <div class="col-md-6 col-lg-3">
+
+                    <label for="maxArea" class="form-label">
+                        Diện tích đến (m²)
+                    </label>
+
+                    <input type="number"
+                           id="maxArea"
+                           name="maxArea"
+                           min="0"
+                           step="any"
+                           th:value="${maxArea}"
+                           class="form-control filter-input"
+                           placeholder="Ví dụ: 30">
+
+                </div>
+
+                <!-- SẮP XẾP -->
+                <div class="col-md-6 col-lg-4">
+
+                    <label for="sort" class="form-label">
+                        <i class="bi bi-sort-down me-1 text-primary"></i>
+                        Sắp xếp phòng
+                    </label>
+
+                    <select id="sort"
+                            name="sort"
+                            class="form-select filter-input">
+
+                        <option value="latest"
+                                th:selected="${sort == 'latest'}">
+                            Phòng mới nhất
+                        </option>
+
+                        <option value="priceAsc"
+                                th:selected="${sort == 'priceAsc'}">
+                            Giá thuê: Thấp đến cao
+                        </option>
+
+                        <option value="priceDesc"
+                                th:selected="${sort == 'priceDesc'}">
+                            Giá thuê: Cao đến thấp
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- NÚT THAO TÁC -->
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
+
+                <button type="submit" class="btn search-button">
+
+                    <i class="bi bi-funnel-fill me-2"></i>
+                    Tìm kiếm và sắp xếp
+
+                </button>
+
+                <a th:if="${hasActiveFilters}"
+                   th:href="@{/}"
+                   class="btn btn-outline-secondary reset-button">
+
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>
+                    Xóa tất cả bộ lọc
+
+                </a>
+
+            </div>
+
+            <p class="filter-hint mt-3 mb-0">
+
+                <i class="bi bi-info-circle me-1"></i>
+
+                Bạn có thể kết hợp mã phòng, giá thuê, diện tích
+                và cách sắp xếp để tìm phòng phù hợp.
+
+            </p>
+
+        </form>
+
+    </div>
+
+    <!-- THÔNG BÁO LỖI NHẬP BỘ LỌC -->
+    <div th:if="${!#lists.isEmpty(filterErrors)}"
+         class="alert alert-warning mb-4">
+
+        <div class="fw-bold mb-2">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            Vui lòng kiểm tra lại điều kiện tìm kiếm
+        </div>
+
+        <ul class="mb-0 ps-4">
+
+            <li th:each="error : ${filterErrors}"
+                th:text="${error}">
+                Thông báo lỗi
             </li>
 
-            <!-- Các số trang -->
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, roomPage.totalPages - 1)}" th:classappend="${i == roomPage.number ? 'active' : ''}">
-                <a class="page-link" th:href="@{/(page=${i}, keyword=${keyword})}" th:text="${i + 1}">1</a>
-            </li>
-
-            <!-- Nút Next -->
-            <li class="page-item" th:classappend="${roomPage.last ? 'disabled' : ''}">
-                <a class="page-link" th:href="@{/(page=${roomPage.number + 1}, keyword=${keyword})}">Sau</a>
-            </li>
         </ul>
-    </nav>
 
-</div>
+    </div>
 
-<!-- Bootstrap JS -->
+    <!-- KẾT QUẢ TÌM KIẾM -->
+    <div th:if="${hasActiveFilters}"
+         class="alert alert-info py-3 mb-4">
+
+        <i class="bi bi-funnel-fill me-2"></i>
+
+        Đang hiển thị kết quả theo điều kiện tìm kiếm và sắp xếp đã chọn.
+
+        <a th:href="@{/}"
+           class="ms-2 text-decoration-none fw-semibold">
+            Xóa bộ lọc
+        </a>
+
+    </div>
+
+    <!-- DANH SÁCH CARD PHÒNG -->
+    <div class="row g-4" th:if="${!#lists.isEmpty(rooms)}">
+
+        <div class="col-sm-6 col-lg-4"
+             th:each="room : ${rooms}">
+
+            <div class="card room-card">
+
+                <!-- HÌNH ẢNH -->
+                <div class="room-image-wrapper">
+
+                    <span class="room-status">
+
+                        <i class="bi bi-check-circle me-1"></i>
+                        Còn trống
+
+                    </span>
+
+                    <!-- CÓ ẢNH -->
+                    <img th:if="${room.imageUrls != null and !room.imageUrls.isBlank()}"
+                         th:src="${room.imageUrls.split(',')[0].trim()}"
+                         class="room-image"
+                         th:alt="${'Hình ảnh phòng ' + room.roomNumber}"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                    <!-- KHÔNG CÓ ẢNH HOẶC ẢNH LỖI -->
+                    <div class="room-image-placeholder"
+                         th:style="${room.imageUrls != null and !room.imageUrls.isBlank() ? 'display:none' : 'display:flex'}">
+
+                        <i class="bi bi-house-door"></i>
+
+                        <span class="small mt-2">
+                            Chưa có hình ảnh
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- THÔNG TIN PHÒNG -->
+                <div class="room-card-body">
+
+                    <div class="room-number"
+                         th:text="${'Phòng ' + room.roomNumber}">
+
+                        Phòng P101
+
+                    </div>
+
+                    <!-- GIÁ -->
+                    <div class="room-price">
+
+                        <span th:if="${room.price != null}"
+                              th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' đ'}">
+
+                            1.800.000 đ
+
+                        </span>
+
+                        <span th:unless="${room.price != null}">
+                            Liên hệ
+                        </span>
+
+                        <span class="room-price-label">
+                            / tháng
+                        </span>
+
+                    </div>
+
+                    <!-- ĐỊA CHỈ TRÊN THẺ PHÒNG -->
+                    <div class="room-location"
+                         th:if="${ownerAddress != null and !ownerAddress.isEmpty()}">
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        <span th:text="${ownerAddress}">
+                            Địa chỉ khu trọ
+                        </span>
+
+                    </div>
+
+                    <!-- MÔ TẢ -->
+                    <p class="room-description"
+                       th:if="${room.description != null and !room.description.isBlank()}"
+                       th:text="${room.description}">
+
+                        Phòng rộng rãi, thoáng mát.
+
+                    </p>
+
+                    <p class="room-description text-muted"
+                       th:unless="${room.description != null and !room.description.isBlank()}">
+
+                        Chủ trọ chưa cập nhật mô tả phòng.
+
+                    </p>
+
+                    <!-- THÔNG SỐ -->
+                    <div class="room-meta">
+
+                        <span th:if="${room.roomArea != null}">
+
+                            <i class="bi bi-aspect-ratio"></i>
+
+                            <span th:text="${#numbers.formatDecimal(room.roomArea, 1, 'COMMA', 1, 'POINT') + ' m²'}">
+                                20 m²
+                            </span>
+
+                        </span>
+
+                        <span th:if="${room.floorNumber != null}">
+
+                            <i class="bi bi-building"></i>
+
+                            <span th:text="${'Tầng ' + room.floorNumber}">
+                                Tầng 1
+                            </span>
+
+                        </span>
+
+                        <span th:if="${room.hasAc == true}">
+
+                            <i class="bi bi-snow"></i>
+                            Máy lạnh
+
+                        </span>
+
+                        <span th:if="${room.hasAc == false}">
+
+                            <i class="bi bi-house"></i>
+                            Không có máy lạnh
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- NÚT XEM CHI TIẾT -->
+                <div class="room-card-footer">
+
+                    <a th:href="@{/rooms/detail/{id}(id=${room.id})}"
+                       class="btn detail-button w-100">
+
+                        <i class="bi bi-eye-fill me-2"></i>
+                        Xem chi tiết phòng
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- KHÔNG TÌM THẤY PHÒNG -->
+    <div class="empty-state text-center mt-3"
+         th:if="${#lists.isEmpty(rooms)}">
+
+        <i class="bi bi-house-x empty-icon"></i>
+
+        <h4 class="fw-bold text-secondary mt-3">
+            Không tìm thấy phòng trọ phù hợp!
+        </h4>
+
+        <p class="text-muted mt-2">
+            Không có phòng trống phù hợp với điều kiện tìm kiếm của bạn.
+            Hãy thử thay đổi giá thuê hoặc diện tích.
+        </p>
+
+        <a th:href="@{/}"
+           class="btn btn-primary mt-2">
+
+            <i class="bi bi-arrow-counterclockwise me-1"></i>
+            Xóa bộ lọc và xem lại phòng
+
+        </a>
+
+    </div>
+
+    <!-- PHÂN TRANG -->
+    <div th:if="${roomPage.totalPages > 1}"
+         class="mt-5">
+
+        <div class="text-center text-muted small mb-3">
+
+            Trang
+            <strong th:text="${roomPage.number + 1}">1</strong>
+            /
+            <strong th:text="${roomPage.totalPages}">1</strong>
+
+        </div>
+
+        <nav aria-label="Phân trang phòng trọ">
+
+            <ul class="pagination justify-content-center flex-wrap">
+
+                <!-- TRANG TRƯỚC -->
+                <li class="page-item"
+                    th:classappend="${roomPage.first ? 'disabled' : ''}">
+
+                    <a class="page-link"
+                       th:href="@{/(page=${roomPage.number - 1},
+                                    size=${roomPage.size},
+                                    keyword=${keyword},
+                                    minPrice=${minPrice},
+                                    maxPrice=${maxPrice},
+                                    minArea=${minArea},
+                                    maxArea=${maxArea},
+                                    sort=${sort})}">
+
+                        <i class="bi bi-chevron-left"></i>
+                        Trước
+
+                    </a>
+
+                </li>
+
+                <!-- CÁC TRANG -->
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, roomPage.totalPages - 1)}"
+                    th:classappend="${i == roomPage.number ? 'active' : ''}">
+
+                    <a class="page-link"
+                       th:href="@{/(page=${i},
+                                    size=${roomPage.size},
+                                    keyword=${keyword},
+                                    minPrice=${minPrice},
+                                    maxPrice=${maxPrice},
+                                    minArea=${minArea},
+                                    maxArea=${maxArea},
+                                    sort=${sort})}"
+                       th:text="${i + 1}">
+
+                        1
+
+                    </a>
+
+                </li>
+
+                <!-- TRANG SAU -->
+                <li class="page-item"
+                    th:classappend="${roomPage.last ? 'disabled' : ''}">
+
+                    <a class="page-link"
+                       th:href="@{/(page=${roomPage.number + 1},
+                                    size=${roomPage.size},
+                                    keyword=${keyword},
+                                    minPrice=${minPrice},
+                                    maxPrice=${maxPrice},
+                                    minArea=${minArea},
+                                    maxArea=${maxArea},
+                                    sort=${sort})}">
+
+                        Sau
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+    <!-- BẢN ĐỒ VỊ TRÍ KHU TRỌ -->
+    <section class="map-section"
+             th:if="${ownerAddress != null and !ownerAddress.isEmpty()
+                     and ownerMapEmbedUrl != null and !ownerMapEmbedUrl.isEmpty()}">
+
+        <div class="row align-items-center mb-4">
+
+            <div class="col-md-8">
+
+                <span class="text-primary fw-semibold small">
+                    VỊ TRÍ KHU TRỌ
+                </span>
+
+                <h2 class="section-title mt-2 mb-2">
+                    Tìm đường đến khu trọ
+                </h2>
+
+                <p class="map-address mb-0">
+
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+
+                    <span th:text="${ownerAddress}">
+                        Địa chỉ khu trọ
+                    </span>
+
+                </p>
+
+            </div>
+
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                <a th:if="${ownerMapsUrl != null and !ownerMapsUrl.isEmpty()}"
+                   th:href="${ownerMapsUrl}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-outline-primary">
+
+                    <i class="bi bi-map-fill me-2"></i>
+                    Mở Google Maps
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <iframe class="map-frame"
+                th:src="${ownerMapEmbedUrl}"
+                title="Bản đồ vị trí khu trọ"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen>
+        </iframe>
+
+        <p class="text-muted small mt-3 mb-0">
+
+            <i class="bi bi-info-circle me-1"></i>
+
+            Vị trí bản đồ được tìm theo địa chỉ khu trọ đã cấu hình.
+
+        </p>
+
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="main-footer">
+
+    <div class="container">
+
+        <div class="row align-items-start g-4">
+
+            <div class="col-md-6">
+
+                <h5 class="fw-bold mb-2">
+
+                    <i class="bi bi-house-heart-fill text-warning me-2"></i>
+                    PHÒNG TRỌ CHO THUÊ
+
+                </h5>
+
+                <p class="footer-muted mb-0">
+
+                    Hệ thống hỗ trợ tìm kiếm và xem thông tin phòng trọ.
+                    Thông tin phòng được cập nhật từ hệ thống quản lý.
+
+                </p>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <h6 class="fw-bold mb-2">
+
+                    <i class="bi bi-geo-alt-fill text-warning me-2"></i>
+                    Địa chỉ khu trọ
+
+                </h6>
+
+                <p class="footer-address mb-2"
+                   th:if="${ownerAddress != null and !ownerAddress.isEmpty()}"
+                   th:text="${ownerAddress}">
+
+                    Địa chỉ khu trọ
+
+                </p>
+
+                <p class="footer-muted mb-2"
+                   th:unless="${ownerAddress != null and !ownerAddress.isEmpty()}">
+
+                    Chưa cập nhật địa chỉ khu trọ.
+
+                </p>
+
+                <a th:if="${ownerMapsUrl != null and !ownerMapsUrl.isEmpty()}"
+                   th:href="${ownerMapsUrl}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="footer-map-link">
+
+                    <i class="bi bi-map me-1"></i>
+                    Xem đường đi trên Google Maps
+                    <i class="bi bi-box-arrow-up-right ms-1"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <hr class="border-secondary my-4">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-md-7">
+
+                <p class="footer-muted mb-0">
+
+                    © 2026 Hệ thống Quản lý Phòng Trọ.
+
+                </p>
+
+            </div>
+
+            <div class="col-md-5 text-md-end">
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-light btn-sm">
+
+                    <i class="bi bi-person-lock me-1"></i>
+                    Đăng nhập quản trị
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

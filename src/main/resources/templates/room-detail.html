@@ -1,123 +1,1218 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Chi Tiết Phòng Trọ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${'Chi tiết phòng ' + room.roomNumber}">Chi tiết phòng trọ</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="bg-light">
 
-<!-- Navbar -->
+    <style>
+        body {
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar-brand {
+            font-size: 18px;
+        }
+
+        .detail-card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .page-title {
+            color: #243b55;
+            font-weight: 700;
+        }
+
+        .room-price {
+            color: #dc3545;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .section-title {
+            color: #495057;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        /* ALBUM ẢNH */
+        .gallery-item {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #e9ecef;
+            outline: none;
+        }
+
+        .gallery-item:focus-visible {
+            box-shadow: 0 0 0 3px rgba(36, 74, 118, 0.35);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 175px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-placeholder {
+            display: none;
+            height: 175px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #6c757d;
+            background: #e9ecef;
+        }
+
+        .gallery-item.is-broken {
+            cursor: default;
+        }
+
+        .gallery-item.is-broken .gallery-overlay {
+            display: none;
+        }
+
+        /* MODAL ALBUM ẢNH */
+        .image-modal-content {
+            background: #151515;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .image-modal-body {
+            position: relative;
+            min-height: 300px;
+            padding: 15px 65px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #modalImage {
+            max-height: 75vh;
+            width: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .gallery-nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 43px;
+            height: 55px;
+            border: none;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            z-index: 2;
+        }
+
+        .gallery-nav-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .gallery-nav-button:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 3px;
+        }
+
+        .gallery-prev {
+            left: 10px;
+        }
+
+        .gallery-next {
+            right: 10px;
+        }
+
+        .gallery-counter {
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 0 10px 15px;
+        }
+
+        .gallery-error {
+            display: none;
+            color: #ddd;
+            text-align: center;
+            padding: 35px 10px;
+        }
+
+        /* THÔNG SỐ */
+        .info-list .list-group-item {
+            padding: 14px 12px;
+        }
+
+        .info-label {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .info-value {
+            text-align: right;
+            margin-left: 12px;
+        }
+
+        .description-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 18px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        /* LIÊN HỆ VÀ ĐĂNG KÝ */
+        .contact-button {
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .contact-action {
+            min-height: 54px;
+            border-radius: 11px;
+            font-weight: 600;
+        }
+
+        .register-button {
+            border-radius: 10px;
+            font-weight: 700;
+            min-height: 50px;
+        }
+
+        .contact-address {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 767px) {
+            .room-price {
+                font-size: 21px;
+                margin-top: 12px;
+            }
+
+            .gallery-item img,
+            .gallery-placeholder {
+                height: 135px;
+            }
+
+            .info-list .list-group-item {
+                font-size: 14px;
+            }
+
+            .image-modal-body {
+                min-height: 250px;
+                padding: 15px 48px;
+            }
+
+            #modalImage {
+                max-height: 65vh;
+            }
+
+            .gallery-nav-button {
+                width: 34px;
+                height: 45px;
+                font-size: 21px;
+            }
+
+            .gallery-prev {
+                left: 7px;
+            }
+
+            .gallery-next {
+                right: 7px;
+            }
+
+            .register-button,
+            .contact-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+
     <div class="container">
-        <a class="navbar-brand fw-bold text-warning" href="/"><i class="bi bi-house-heart-fill me-2"></i> PHÒNG TRỌ SINH VIÊN / CAO CẤP</a>
+
+        <a class="navbar-brand fw-bold text-warning" th:href="@{/}">
+            <i class="bi bi-house-heart-fill me-2"></i>
+            QUẢN LÝ PHÒNG TRỌ
+        </a>
+
         <div class="ms-auto">
-            <a th:href="@{/}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left me-1"></i> Quay lại danh sách</a>
+
+            <a th:href="@{/}" class="btn btn-outline-light btn-sm">
+
+                <i class="bi bi-arrow-left me-1"></i>
+                Quay lại danh sách
+
+            </a>
+
         </div>
+
     </div>
 </nav>
 
-<!-- Nội dung chi tiết phòng -->
-<div class="container my-5" style="max-width: 900px;">
-    <div class="card shadow-sm border-0 p-4">
-        
-        <!-- HIỂN THỊ ALBUM HÌNH ẢNH (LƯỚI 4 ẢNH) -->
-        <div class="mb-4">
-            <h5 class="text-secondary fw-bold mb-3"><i class="bi bi-images me-2"></i> Hình ảnh thực tế phòng trọ</h5>
-            <div class="row g-3" th:if="${room.imageUrls != null and !room.imageUrls.isEmpty()}">
-                <div class="col-md-3 col-6" th:each="img : ${room.imageUrls.split(',')}">
-                    <img th:src="${img}" class="img-fluid rounded shadow-sm border" alt="Ảnh phòng" style="height: 160px; width: 100%; object-fit: cover;">
-                </div>
-            </div>
-            <div th:if="${room.imageUrls == null or room.imageUrls.isEmpty()}" class="text-center py-3 bg-white rounded border">
-                <p class="text-muted mb-0">Chưa có hình ảnh nào được tải lên.</p>
-            </div>
-        </div>
+<!-- NỘI DUNG CHI TIẾT -->
+<div class="container my-5" style="max-width: 1050px;">
 
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="text-primary fw-bold mb-0" th:text="${'Phòng số: ' + room.roomNumber}">P101</h2>
-                <h3 class="text-danger fw-bold mb-0" th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ / tháng'}">1,500,000 đ</h3>
+    <div class="card detail-card shadow-sm">
+
+        <div class="card-body p-3 p-md-5">
+
+            <!-- TIÊU ĐỀ PHÒNG -->
+            <div class="d-flex justify-content-between align-items-start flex-wrap mb-4">
+
+                <div>
+
+                    <h2 class="page-title mb-2"
+                        th:text="${'Phòng số: ' + room.roomNumber}">
+                        Phòng số: P101
+                    </h2>
+
+                    <span th:if="${room.status == 'TRONG'}"
+                          class="badge bg-success fs-6">
+
+                        <i class="bi bi-check-circle me-1"></i>
+                        Đang còn trống
+
+                    </span>
+
+                    <span th:if="${room.status == 'DA_THUE'}"
+                          class="badge bg-warning text-dark fs-6">
+
+                        <i class="bi bi-person-check me-1"></i>
+                        Đã có người thuê
+
+                    </span>
+
+                </div>
+
+                <div class="room-price">
+
+                    <span th:if="${room.price != null}"
+                          th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ / tháng'}">
+                        1,500,000 VNĐ / tháng
+                    </span>
+
+                    <span th:unless="${room.price != null}">
+                        Chưa cập nhật giá
+                    </span>
+
+                </div>
+
             </div>
-            
+
             <hr>
 
-            <h5 class="text-secondary fw-bold mb-3"><i class="bi bi-info-circle me-2"></i> Thông số chi tiết</h5>
-            <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold"><i class="bi bi-aspect-ratio me-2 text-primary"></i> Diện tích phòng:</span>
-                            <span th:text="${room.roomArea != null ? room.roomArea + ' m²' : 'Đang cập nhật'}">20 m²</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold"><i class="bi bi-water me-2 text-primary"></i> Diện tích phòng tắm:</span>
-                            <span th:text="${room.bathroomArea != null ? room.bathroomArea + ' m²' : 'Đang cập nhật'}">3.5 m²</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold"><i class="bi bi-snow me-2 text-primary"></i> Máy lạnh:</span>
-                            <span class="badge" th:classappend="${room.hasAc == true ? 'bg-success' : 'bg-secondary'}" 
-                                  th:text="${room.hasAc == true ? 'Có sẵn máy lạnh' : 'Không có'}">Có sẵn máy lạnh</span>
-                        </li>
-                    </ul>
+            <!-- ALBUM ẢNH -->
+            <div class="mb-5">
+
+                <h5 class="section-title">
+
+                    <i class="bi bi-images me-2"></i>
+                    Hình ảnh thực tế phòng trọ
+
+                </h5>
+
+                <div class="row g-3"
+                     th:if="${room.imageUrls != null and !room.imageUrls.isBlank()}">
+
+                    <div class="col-6 col-md-4 col-lg-3"
+                         th:each="img : ${room.imageUrls.split(',')}"
+                         th:if="${!img.trim().isEmpty()}">
+
+                        <div class="gallery-item shadow-sm"
+                             role="button"
+                             tabindex="0"
+                             data-bs-toggle="modal"
+                             data-bs-target="#imageModal"
+                             th:attr="data-image=${img.trim()},
+                                      aria-label=${'Xem ảnh phòng ' + room.roomNumber}">
+
+                            <img th:src="${img.trim()}"
+                                 th:alt="${'Hình ảnh phòng ' + room.roomNumber}"
+                                 onerror="handleGalleryImageError(this);">
+
+                            <div class="gallery-placeholder">
+
+                                <i class="bi bi-image fs-1"></i>
+
+                                <small>Không tải được ảnh</small>
+
+                            </div>
+
+                            <div class="gallery-overlay">
+
+                                <i class="bi bi-zoom-in fs-2"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
-                <div class="col-md-6">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold"><i class="bi bi-building me-2 text-primary"></i> Vị trí tầng:</span>
-                            <span th:text="${room.floorNumber != null ? 'Tầng ' + room.floorNumber : 'Tầng 1'}">Tầng 1</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold"><i class="bi bi-lightning-charge me-2 text-warning"></i> Giá điện:</span>
-                            <span>3.500 đ / kWh</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="fw-bold"><i class="bi bi-droplet me-2 text-info"></i> Giá nước:</span>
-                            <span>20.000 đ / m³</span>
-                        </li>
-                    </ul>
+
+                <div th:if="${room.imageUrls == null or room.imageUrls.isBlank()}"
+                     class="text-center py-5 bg-white rounded border">
+
+                    <i class="bi bi-images fs-1 text-secondary"></i>
+
+                    <p class="text-muted mb-0 mt-2">
+                        Chưa có hình ảnh nào được tải lên.
+                    </p>
+
                 </div>
+
+                <p class="text-muted small mt-3 mb-0"
+                   th:if="${room.imageUrls != null and !room.imageUrls.isBlank()}">
+
+                    <i class="bi bi-info-circle me-1"></i>
+
+                    Nhấn vào hình ảnh để xem kích thước lớn
+                    và chuyển qua lại giữa các ảnh.
+
+                </p>
+
             </div>
 
-            <!-- Mô tả chi tiết phòng & phòng tắm -->
-            <div class="mb-4">
-                <h5 class="text-secondary fw-bold mb-2"><i class="bi bi-card-text me-2"></i> Mô tả không gian</h5>
-                <p class="text-muted" th:text="${room.description}">Phòng rộng rãi, thoáng mát, cửa sổ lớn.</p>
-                <p class="text-muted"><strong class="text-dark">Chi tiết phòng tắm:</strong> <span th:text="${room.bathroomDesc != null ? room.bathroomDesc : 'Phòng tắm khép kín, sạch sẽ, thiết bị vệ sinh hiện đại.'}">Khép kín</span></p>
+            <!-- THÔNG SỐ CHI TIẾT -->
+            <div class="mb-5">
+
+                <h5 class="section-title">
+
+                    <i class="bi bi-info-circle me-2"></i>
+                    Thông số chi tiết
+
+                </h5>
+
+                <div class="row g-4">
+
+                    <!-- CỘT TRÁI -->
+                    <div class="col-md-6">
+
+                        <ul class="list-group list-group-flush info-list">
+
+                            <!-- DIỆN TÍCH PHÒNG -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span class="info-label">
+
+                                    <i class="bi bi-aspect-ratio me-2 text-primary"></i>
+                                    Diện tích phòng:
+
+                                </span>
+
+                                <span class="info-value">
+
+                                    <span th:if="${room.roomArea != null}"
+                                          th:text="${#numbers.formatDecimal(room.roomArea, 1, 'COMMA', 2, 'POINT') + ' m²'}">
+                                        20 m²
+                                    </span>
+
+                                    <span th:unless="${room.roomArea != null}"
+                                          class="text-muted">
+                                        Chưa cập nhật
+                                    </span>
+
+                                </span>
+
+                            </li>
+
+                            <!-- DIỆN TÍCH PHÒNG TẮM -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span class="info-label">
+
+                                    <i class="bi bi-water me-2 text-primary"></i>
+                                    Diện tích phòng tắm:
+
+                                </span>
+
+                                <span class="info-value">
+
+                                    <span th:if="${room.bathroomArea != null}"
+                                          th:text="${#numbers.formatDecimal(room.bathroomArea, 1, 'COMMA', 2, 'POINT') + ' m²'}">
+                                        3.5 m²
+                                    </span>
+
+                                    <span th:unless="${room.bathroomArea != null}"
+                                          class="text-muted">
+                                        Chưa cập nhật
+                                    </span>
+
+                                </span>
+
+                            </li>
+
+                            <!-- MÁY LẠNH -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span class="info-label">
+
+                                    <i class="bi bi-snow me-2 text-primary"></i>
+                                    Máy lạnh:
+
+                                </span>
+
+                                <span class="info-value">
+
+                                    <span th:if="${room.hasAc == true}"
+                                          class="badge bg-success">
+                                        Có sẵn máy lạnh
+                                    </span>
+
+                                    <span th:if="${room.hasAc == false}"
+                                          class="badge bg-secondary">
+                                        Không có
+                                    </span>
+
+                                    <span th:if="${room.hasAc == null}"
+                                          class="text-muted">
+                                        Chưa cập nhật
+                                    </span>
+
+                                </span>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                    <!-- CỘT PHẢI -->
+                    <div class="col-md-6">
+
+                        <ul class="list-group list-group-flush info-list">
+
+                            <!-- VỊ TRÍ TẦNG -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span class="info-label">
+
+                                    <i class="bi bi-building me-2 text-primary"></i>
+                                    Vị trí tầng:
+
+                                </span>
+
+                                <span class="info-value">
+
+                                    <span th:if="${room.floorNumber != null}"
+                                          th:text="${'Tầng ' + room.floorNumber}">
+                                        Tầng 1
+                                    </span>
+
+                                    <span th:unless="${room.floorNumber != null}"
+                                          class="text-muted">
+                                        Chưa cập nhật
+                                    </span>
+
+                                </span>
+
+                            </li>
+
+                            <!-- GIÁ ĐIỆN -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span class="info-label">
+
+                                    <i class="bi bi-lightning-charge me-2 text-warning"></i>
+                                    Giá điện:
+
+                                </span>
+
+                                <span class="info-value">
+
+                                    <span th:if="${electricityService != null and electricityService.price != null}"
+                                          class="text-danger fw-semibold"
+                                          th:text="${#numbers.formatDecimal(electricityService.price, 0, 'COMMA', 0, 'POINT') + ' đ / ' + electricityService.unit}">
+                                        3.500 đ / kWh
+                                    </span>
+
+                                    <span th:unless="${electricityService != null and electricityService.price != null}"
+                                          class="text-muted">
+                                        Chưa cập nhật
+                                    </span>
+
+                                </span>
+
+                            </li>
+
+                            <!-- GIÁ NƯỚC -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <span class="info-label">
+
+                                    <i class="bi bi-droplet me-2 text-info"></i>
+                                    Giá nước:
+
+                                </span>
+
+                                <span class="info-value">
+
+                                    <span th:if="${waterService != null and waterService.price != null}"
+                                          class="text-primary fw-semibold"
+                                          th:text="${#numbers.formatDecimal(waterService.price, 0, 'COMMA', 0, 'POINT') + ' đ / ' + waterService.unit}">
+                                        20.000 đ / m³
+                                    </span>
+
+                                    <span th:unless="${waterService != null and waterService.price != null}"
+                                          class="text-muted">
+                                        Chưa cập nhật
+                                    </span>
+
+                                </span>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <!-- Nút liên hệ thuê -->
-            <div class="text-center">
-                <button class="btn btn-success btn-lg px-5 shadow-sm" data-bs-toggle="modal" data-bs-target="#contactModal">
-                    <i class="bi bi-telephone-fill me-2"></i> Liên hệ thuê phòng ngay
+            <!-- MÔ TẢ PHÒNG -->
+            <div class="mb-5">
+
+                <h5 class="section-title">
+
+                    <i class="bi bi-card-text me-2"></i>
+                    Mô tả phòng trọ
+
+                </h5>
+
+                <div class="description-box">
+
+                    <p class="mb-0"
+                       th:if="${room.description != null and !room.description.isBlank()}"
+                       th:text="${room.description}">
+                        Phòng rộng rãi, thoáng mát.
+                    </p>
+
+                    <p class="text-muted mb-0"
+                       th:unless="${room.description != null and !room.description.isBlank()}">
+                        Chủ trọ chưa cập nhật mô tả phòng.
+                    </p>
+
+                </div>
+
+                <!-- MÔ TẢ PHÒNG TẮM -->
+                <div class="mt-3">
+
+                    <h6 class="fw-bold text-secondary mb-2">
+
+                        <i class="bi bi-droplet-half me-2"></i>
+                        Chi tiết phòng tắm
+
+                    </h6>
+
+                    <div class="description-box">
+
+                        <p class="mb-0"
+                           th:if="${room.bathroomDesc != null and !room.bathroomDesc.isBlank()}"
+                           th:text="${room.bathroomDesc}">
+                            Phòng tắm khép kín.
+                        </p>
+
+                        <p class="text-muted mb-0"
+                           th:unless="${room.bathroomDesc != null and !room.bathroomDesc.isBlank()}">
+                            Chưa có thông tin mô tả phòng tắm.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- THÔNG TIN CHI PHÍ -->
+            <div class="alert alert-info">
+
+                <i class="bi bi-info-circle-fill me-2"></i>
+
+                Chi phí điện, nước được tính theo đơn giá dịch vụ hiện tại
+                của hệ thống. Các dịch vụ khác (nếu có) sẽ được tính theo
+                đơn giá tương ứng khi lập hóa đơn.
+
+            </div>
+
+            <!-- LIÊN HỆ VÀ ĐĂNG KÝ -->
+            <div class="text-center border-top pt-4">
+
+                <!-- PHÒNG CÒN TRỐNG -->
+                <div th:if="${room.status == 'TRONG'}">
+
+                    <h5 class="fw-bold text-success mb-2">
+                        Bạn quan tâm đến phòng này?
+                    </h5>
+
+                    <p class="text-muted mb-3">
+                        Đăng ký lịch xem phòng trực tuyến hoặc liên hệ chủ trọ để được tư vấn.
+                    </p>
+
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+
+                        <!-- ĐĂNG KÝ LỊCH XEM PHÒNG -->
+                        <a th:href="@{/appointments/register(roomId=${room.id})}"
+                           class="btn btn-primary btn-lg px-4 shadow-sm register-button">
+
+                            <i class="bi bi-calendar-check-fill me-2"></i>
+                            Đăng ký lịch xem phòng
+
+                        </a>
+
+                        <!-- LIÊN HỆ CHỦ TRỌ -->
+                        <button type="button"
+                                class="btn btn-success btn-lg px-4 shadow-sm contact-button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#contactModal">
+
+                            <i class="bi bi-telephone-fill me-2"></i>
+                            Liên hệ chủ trọ
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- PHÒNG ĐÃ THUÊ -->
+                <div th:if="${room.status == 'DA_THUE'}">
+
+                    <div class="alert alert-warning mb-0">
+
+                        <i class="bi bi-exclamation-circle me-2"></i>
+
+                        Phòng này hiện đã có người thuê.
+                        Vui lòng quay lại danh sách để xem phòng còn trống.
+
+                        <div class="mt-3">
+
+                            <a th:href="@{/}" class="btn btn-outline-dark">
+
+                                <i class="bi bi-arrow-left me-1"></i>
+                                Xem phòng khác
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL ALBUM ẢNH -->
+<div class="modal fade"
+     id="imageModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+
+        <div class="modal-content image-modal-content">
+
+            <div class="modal-header border-secondary">
+
+                <h5 class="modal-title text-white">
+
+                    <i class="bi bi-images me-2"></i>
+                    Hình ảnh phòng trọ
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"
+                        aria-label="Đóng">
                 </button>
+
             </div>
+
+            <div class="image-modal-body">
+
+                <button type="button"
+                        id="prevImageButton"
+                        class="gallery-nav-button gallery-prev"
+                        aria-label="Ảnh trước">
+
+                    <i class="bi bi-chevron-left"></i>
+
+                </button>
+
+                <img id="modalImage"
+                     src=""
+                     alt="Hình ảnh phòng trọ"
+                     onerror="handleModalImageError(this);">
+
+                <div id="modalImageError" class="gallery-error">
+
+                    <i class="bi bi-image fs-1"></i>
+
+                    <p class="mb-0 mt-2">
+                        Không thể tải hình ảnh này.
+                    </p>
+
+                </div>
+
+                <button type="button"
+                        id="nextImageButton"
+                        class="gallery-nav-button gallery-next"
+                        aria-label="Ảnh tiếp theo">
+
+                    <i class="bi bi-chevron-right"></i>
+
+                </button>
+
+            </div>
+
+            <div id="galleryCounter" class="gallery-counter">
+                1 / 1
+            </div>
+
         </div>
+
     </div>
+
 </div>
 
-<!-- Modal liên hệ -->
-<div class="modal fade" id="contactModal" tabindex="-1">
-    <div class="modal-dialog">
+<!-- MODAL LIÊN HỆ CHỦ TRỌ -->
+<div class="modal fade"
+     id="contactModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
         <div class="modal-content">
+
             <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i> Thông Tin Liên Hệ Chủ Trọ</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+
+                <h5 class="modal-title">
+
+                    <i class="bi bi-person-lines-fill me-2"></i>
+                    Thông tin liên hệ chủ trọ
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
             </div>
-            <div class="modal-body text-center py-4">
-                <p class="fs-5">Quý khách vui lòng liên hệ trực tiếp qua số điện thoại hoặc Zalo để xem phòng:</p>
-                <h3 class="text-success fw-bold mb-3"><i class="bi bi-telephone"></i> 0912.345.678</h3>
-                <p class="text-muted mb-0">Địa chỉ: Số 123, Đường ABC, Phường XYZ, TP.HCM</p>
+
+            <div class="modal-body p-4">
+
+                <div class="text-center mb-4">
+
+                    <div class="rounded-circle bg-success-subtle d-inline-flex
+                                align-items-center justify-content-center"
+                         style="width: 75px; height: 75px;">
+
+                        <i class="bi bi-house-heart-fill text-success fs-1"></i>
+
+                    </div>
+
+                    <h5 class="fw-bold mt-3 mb-1">
+                        Liên hệ xem phòng
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        Phòng
+                        <strong th:text="${room.roomNumber}">P101</strong>
+
+                    </p>
+
+                </div>
+
+                <!-- ĐỊA CHỈ -->
+                <div class="contact-address mb-3"
+                     th:if="${ownerAddress != null and !#strings.isEmpty(ownerAddress)}">
+
+                    <div class="fw-bold mb-2">
+
+                        <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                        Địa chỉ liên hệ
+
+                    </div>
+
+                    <div th:text="${ownerAddress}">
+                        Địa chỉ chủ trọ
+                    </div>
+
+                </div>
+
+                <!-- NÚT GỌI ĐIỆN -->
+                <a th:if="${ownerPhone != null and !#strings.isEmpty(ownerPhone)}"
+                   th:href="${'tel:' + ownerPhone}"
+                   class="btn btn-success contact-action w-100 mb-2 d-flex
+                          align-items-center justify-content-center">
+
+                    <i class="bi bi-telephone-fill me-2"></i>
+                    Gọi điện cho chủ trọ
+
+                </a>
+
+                <!-- NÚT ZALO -->
+                <a th:if="${ownerZaloUrl != null and !#strings.isEmpty(ownerZaloUrl)}"
+                   th:href="${ownerZaloUrl}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-primary contact-action w-100 mb-2 d-flex
+                          align-items-center justify-content-center">
+
+                    <i class="bi bi-chat-dots-fill me-2"></i>
+                    Nhắn tin qua Zalo
+
+                </a>
+
+                <!-- NÚT GOOGLE MAPS -->
+                <a th:if="${ownerMapsUrl != null and !#strings.isEmpty(ownerMapsUrl)}"
+                   th:href="${ownerMapsUrl}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-outline-danger contact-action w-100 mb-2 d-flex
+                          align-items-center justify-content-center">
+
+                    <i class="bi bi-map-fill me-2"></i>
+                    Xem vị trí trên Google Maps
+
+                </a>
+
+                <!-- CHƯA CÓ THÔNG TIN LIÊN HỆ -->
+                <div th:if="${(ownerPhone == null or #strings.isEmpty(ownerPhone))
+                            and (ownerZaloUrl == null or #strings.isEmpty(ownerZaloUrl))
+                            and (ownerAddress == null or #strings.isEmpty(ownerAddress))}"
+                     class="alert alert-warning mb-0">
+
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                    Thông tin liên hệ của chủ trọ chưa được cập nhật.
+                    Vui lòng liên hệ quản trị viên để được hỗ trợ.
+
+                </div>
+
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Đóng
+
+                </button>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
 
-<!-- Bootstrap JS -->
+<!-- JAVASCRIPT -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    // ==========================================
+    // 1. XỬ LÝ ẢNH THUMBNAIL BỊ LỖI
+    // ==========================================
+
+    function handleGalleryImageError(img) {
+
+        const galleryItem = img.closest(".gallery-item");
+        const placeholder = img.nextElementSibling;
+
+        img.style.display = "none";
+
+        if (placeholder) {
+            placeholder.style.display = "flex";
+        }
+
+        if (galleryItem) {
+            galleryItem.dataset.imageError = "true";
+            galleryItem.classList.add("is-broken");
+            galleryItem.removeAttribute("data-bs-toggle");
+            galleryItem.removeAttribute("data-bs-target");
+        }
+    }
+
+
+    // ==========================================
+    // 2. KHAI BÁO BIẾN ALBUM ẢNH
+    // ==========================================
+
+    const imageModal = document.getElementById("imageModal");
+
+    const modalImage = document.getElementById("modalImage");
+
+    const modalImageError = document.getElementById("modalImageError");
+
+    const galleryCounter = document.getElementById("galleryCounter");
+
+    const prevImageButton = document.getElementById("prevImageButton");
+
+    const nextImageButton = document.getElementById("nextImageButton");
+
+    let galleryItems = [];
+
+    let currentImageIndex = 0;
+
+
+    // ==========================================
+    // 3. HIỂN THỊ ẢNH TRONG MODAL
+    // ==========================================
+
+    function showGalleryImage(index) {
+
+        if (galleryItems.length === 0) {
+            return;
+        }
+
+        currentImageIndex =
+            (index + galleryItems.length) % galleryItems.length;
+
+        const currentItem = galleryItems[currentImageIndex];
+
+        const imageUrl = currentItem.getAttribute("data-image");
+
+        modalImage.style.display = "block";
+
+        modalImageError.style.display = "none";
+
+        modalImage.src = "";
+
+        modalImage.src = imageUrl;
+
+        galleryCounter.textContent =
+            "Ảnh " + (currentImageIndex + 1)
+            + " / " + galleryItems.length;
+
+        updateGalleryButtons();
+    }
+
+
+    // ==========================================
+    // 4. CẬP NHẬT NÚT ẢNH TRƯỚC / SAU
+    // ==========================================
+
+    function updateGalleryButtons() {
+
+        const showNavigation = galleryItems.length > 1;
+
+        prevImageButton.style.display =
+            showNavigation ? "flex" : "none";
+
+        nextImageButton.style.display =
+            showNavigation ? "flex" : "none";
+    }
+
+
+    // ==========================================
+    // 5. MỞ MODAL VÀ XÁC ĐỊNH ẢNH ĐƯỢC CHỌN
+    // ==========================================
+
+    imageModal.addEventListener("show.bs.modal", function(event) {
+
+        const trigger = event.relatedTarget;
+
+        if (!trigger || trigger.dataset.imageError === "true") {
+
+            event.preventDefault();
+
+            return;
+        }
+
+        galleryItems = Array.from(
+            document.querySelectorAll(".gallery-item")
+        ).filter(item => {
+
+            return item.dataset.imageError !== "true";
+
+        });
+
+        const selectedIndex = galleryItems.indexOf(trigger);
+
+        if (selectedIndex === -1) {
+
+            event.preventDefault();
+
+            return;
+        }
+
+        currentImageIndex = selectedIndex;
+
+        showGalleryImage(currentImageIndex);
+    });
+
+
+    // ==========================================
+    // 6. NÚT ẢNH TRƯỚC
+    // ==========================================
+
+    prevImageButton.addEventListener("click", function() {
+
+        showGalleryImage(currentImageIndex - 1);
+
+    });
+
+
+    // ==========================================
+    // 7. NÚT ẢNH TIẾP THEO
+    // ==========================================
+
+    nextImageButton.addEventListener("click", function() {
+
+        showGalleryImage(currentImageIndex + 1);
+
+    });
+
+
+    // ==========================================
+    // 8. XỬ LÝ ẢNH LỚN BỊ LỖI
+    // ==========================================
+
+    function handleModalImageError(img) {
+
+        img.style.display = "none";
+
+        modalImageError.style.display = "block";
+
+    }
+
+
+    // ==========================================
+    // 9. ĐIỀU KHIỂN BẰNG PHÍM MŨI TÊN
+    // ==========================================
+
+    document.addEventListener("keydown", function(event) {
+
+        if (!imageModal.classList.contains("show")) {
+            return;
+        }
+
+        if (event.key === "ArrowLeft") {
+
+            event.preventDefault();
+
+            showGalleryImage(currentImageIndex - 1);
+
+        }
+
+        if (event.key === "ArrowRight") {
+
+            event.preventDefault();
+
+            showGalleryImage(currentImageIndex + 1);
+
+        }
+
+    });
+
+
+    // ==========================================
+    // 10. HỖ TRỢ MỞ ALBUM BẰNG BÀN PHÍM
+    // ==========================================
+
+    document.querySelectorAll(".gallery-item").forEach(item => {
+
+        item.addEventListener("keydown", function(event) {
+
+            if (event.key === "Enter" || event.key === " ") {
+
+                event.preventDefault();
+
+                item.click();
+
+            }
+
+        });
+
+    });
+
+
+    // ==========================================
+    // 11. RESET MODAL KHI ĐÓNG
+    // ==========================================
+
+    imageModal.addEventListener("hidden.bs.modal", function() {
+
+        modalImage.src = "";
+
+        modalImage.style.display = "block";
+
+        modalImageError.style.display = "none";
+
+        galleryCounter.textContent = "";
+
+        galleryItems = [];
+
+        currentImageIndex = 0;
+
+    });
+
+</script>
+
 </body>
 </html>

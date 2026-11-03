@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký lịch xem phòng</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f6fa;
+            color: #263238;
+        }
+
+        .header {
+            background: #263b50;
+            color: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            text-decoration: none;
+            color: white;
+        }
+
+        .header a.back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .container {
+            width: min(1050px, 92%);
+            margin: 38px auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .page-title h1 {
+            color: #263b50;
+            margin-bottom: 10px;
+            font-size: 29px;
+        }
+
+        .page-title p {
+            color: #77838f;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 26px;
+            box-shadow: 0 5px 22px rgba(30, 50, 70, 0.07);
+        }
+
+        .card h2 {
+            margin: 0 0 20px;
+            color: #263b50;
+            font-size: 20px;
+        }
+
+        .room-number {
+            font-size: 25px;
+            font-weight: 700;
+            color: #2673a5;
+            margin-bottom: 18px;
+        }
+
+        .room-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf0f2;
+            font-size: 14px;
+        }
+
+        .room-info span:first-child {
+            color: #77838f;
+        }
+
+        .room-info strong {
+            text-align: right;
+        }
+
+        .price {
+            color: #e07835;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #dce2e8;
+            border-radius: 8px;
+            background: white;
+            color: #263238;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #3285bd;
+            box-shadow: 0 0 0 3px rgba(50, 133, 189, 0.12);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 105px;
+        }
+
+        .form-note {
+            color: #7b8791;
+            font-size: 12px;
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .btn-submit {
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            background: #2673a5;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #1d5e89;
+        }
+
+        .alert {
+            padding: 13px 15px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .alert-error {
+            color: #842029;
+            background: #f8d7da;
+            border: 1px solid #f5c2c7;
+        }
+
+        .alert-warning {
+            color: #664d03;
+            background: #fff3cd;
+            border: 1px solid #ffecb5;
+        }
+
+        .footer-note {
+            margin-top: 18px;
+            color: #7b8791;
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        @media (max-width: 750px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+
+            .header {
+                padding: 16px 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <a class="brand" th:href="@{/}">NHÀ TRỌ CỦA BẠN</a>
+    <a class="back-link" th:href="@{/}">
+        ← Quay lại danh sách phòng
+    </a>
+</header>
+
+<main class="container">
+
+    <div class="page-title">
+        <h1>Đăng ký lịch xem phòng</h1>
+        <p>
+            Vui lòng điền thông tin bên dưới để đăng ký lịch đến xem phòng.
+            Chúng tôi sẽ liên hệ xác nhận với bạn.
+        </p>
+    </div>
+
+    <div class="content">
+
+        <!-- Thông tin phòng -->
+        <section class="card">
+            <h2>Thông tin phòng trọ</h2>
+
+            <div class="room-number">
+                Phòng
+                <span th:text="${room.roomNumber}">P101</span>
+            </div>
+
+            <div class="room-info">
+                <span>Giá thuê</span>
+                <strong class="price"
+                        th:text="${#numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT')} + ' đ/tháng'">
+                    3,000,000 đ/tháng
+                </strong>
+            </div>
+
+            <div class="room-info" th:if="${room.roomArea != null}">
+                <span>Diện tích phòng</span>
+                <strong th:text="${room.roomArea} + ' m²'">25 m²</strong>
+            </div>
+
+            <div class="room-info" th:if="${room.floorNumber != null}">
+                <span>Tầng</span>
+                <strong th:text="${room.floorNumber}">1</strong>
+            </div>
+
+            <div class="room-info">
+                <span>Trạng thái</span>
+                <strong th:if="${room.status == 'TRONG'}"
+                        style="color: #198754;">
+                    Còn trống
+                </strong>
+                <strong th:unless="${room.status == 'TRONG'}"
+                        style="color: #dc3545;">
+                    Không còn trống
+                </strong>
+            </div>
+
+            <p class="footer-note">
+                Sau khi gửi đăng ký, vui lòng chờ quản lý liên hệ
+                để xác nhận lịch xem phòng.
+            </p>
+        </section>
+
+        <!-- Biểu mẫu đăng ký -->
+        <section class="card">
+            <h2>Thông tin người đăng ký</h2>
+
+            <div class="alert alert-error"
+                 th:if="${errorMessage != null or error != null}"
+                 th:text="${errorMessage != null ? errorMessage : error}">
+                Có lỗi xảy ra. Vui lòng kiểm tra lại thông tin.
+            </div>
+
+            <div class="alert alert-warning"
+                 th:if="${room.status != 'TRONG'}">
+                Phòng này hiện không còn trống nên bạn chưa thể
+                đăng ký lịch xem phòng.
+                <div style="margin-top: 12px;">
+                    <a th:href="@{/}" style="color: #664d03;">
+                        Quay lại danh sách phòng
+                    </a>
+                </div>
+            </div>
+
+            <form th:if="${room.status == 'TRONG'}"
+                  th:action="@{/appointments/register}"
+                  method="post">
+
+                <input type="hidden"
+                       name="roomId"
+                       th:value="${room.id}">
+
+                <div class="form-group">
+                    <label for="fullName">
+                        Họ và tên <span class="required">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="fullName"
+                           name="fullName"
+                           placeholder="Nhập họ và tên của bạn"
+                           maxlength="100"
+                           th:value="${fullName}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">
+                        Số điện thoại <span class="required">*</span>
+                    </label>
+                    <input type="tel"
+                           class="form-control"
+                           id="phone"
+                           name="phone"
+                           placeholder="Ví dụ: 0912345678"
+                           maxlength="20"
+                           inputmode="tel"
+                           th:value="${phone}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitDate">
+                        Ngày xem phòng <span class="required">*</span>
+                    </label>
+                    <input type="date"
+                           class="form-control"
+                           id="visitDate"
+                           name="visitDate"
+                           th:min="${minDate}"
+                           th:value="${visitDate}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitTime">
+                        Giờ xem phòng <span class="required">*</span>
+                    </label>
+
+                    <div class="time-grid">
+                        <select class="form-control"
+                                id="visitTime"
+                                name="visitTime"
+                                th:attr="data-selected=${visitTime}"
+                                required>
+                            <option value="">-- Chọn giờ xem phòng --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-note">
+                        Chọn khung giờ từ 07:00 đến 20:00.
+                        Các khung giờ cách nhau 30 phút.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="note">Ghi chú</label>
+                    <textarea class="form-control"
+                              id="note"
+                              name="note"
+                              maxlength="500"
+                              placeholder="Nhập yêu cầu hoặc thông tin thêm (nếu có)"
+                              th:text="${note}"></textarea>
+                    <div class="form-note">
+                        Không bắt buộc. Tối đa 500 ký tự.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Đăng ký lịch xem phòng
+                </button>
+
+                <p class="footer-note">
+                    Thông tin của bạn được sử dụng để liên hệ
+                    và xác nhận lịch xem phòng.
+                </p>
+
+            </form>
+        </section>
+
+    </div>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const timeSelect = document.getElementById("visitTime");
+
+    if (!timeSelect) {
+        return;
+    }
+
+    // Lấy lại giờ người dùng đã chọn nếu biểu mẫu được gửi lại.
+    let selectedTime = timeSelect.dataset.selected || "";
+
+    // Chuẩn hóa giờ về định dạng HH:mm.
+    selectedTime = selectedTime.substring(0, 5);
+
+    // Tạo danh sách giờ từ 07:00 đến 20:00,
+    // mỗi khung giờ cách nhau 30 phút.
+    for (let totalMinutes = 7 * 60;
+         totalMinutes <= 20 * 60;
+         totalMinutes += 30) {
+
+        const hours = String(
+            Math.floor(totalMinutes / 60)
+        ).padStart(2, "0");
+
+        const minutes = String(
+            totalMinutes % 60
+        ).padStart(2, "0");
+
+        const timeValue = hours + ":" + minutes;
+
+        const option = document.createElement("option");
+        option.value = timeValue;
+        option.textContent = timeValue;
+
+        if (timeValue === selectedTime) {
+            option.selected = true;
+        }
+
+        timeSelect.appendChild(option);
+    }
+});
+</script>
+
+</body>
+</html>

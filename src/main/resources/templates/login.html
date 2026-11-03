@@ -1,44 +1,531 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng Nhập Quản Trị Viên</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập quản trị - Quản lý phòng trọ</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="bg-light d-flex align-items-center justify-content-center vh-100">
 
-<div class="card shadow-sm border-0 p-4" style="width: 400px;">
-    <div class="card-body">
-        <div class="text-center mb-4">
-            <i class="bi bi-shield-lock-fill text-primary display-4"></i>
-            <h3 class="fw-bold text-dark mt-2">Đăng Nhập Chủ Trọ</h3>
-            <p class="text-muted small">Khu vực quản lý hệ thống phòng trọ</p>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(67, 139, 190, 0.35), transparent 35%),
+                radial-gradient(circle at 85% 85%, rgba(30, 91, 137, 0.4), transparent 35%),
+                linear-gradient(135deg, #10283f, #183e5b 55%, #102b43);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 950px;
+            min-height: 570px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: white;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.28);
+        }
+
+        /* Phần giới thiệu */
+        .welcome-panel {
+            position: relative;
+            padding: 55px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            background: linear-gradient(145deg, #17618c, #12344e 75%);
+            overflow: hidden;
+        }
+
+        .welcome-panel::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            right: -110px;
+            top: -100px;
+        }
+
+        .welcome-panel::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 50%;
+            left: -100px;
+            bottom: -100px;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.15);
+            font-size: 25px;
+        }
+
+        .brand-name {
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            margin: 40px 0;
+        }
+
+        .welcome-content h1 {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.35;
+            margin-bottom: 18px;
+        }
+
+        .welcome-content p {
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 350px;
+        }
+
+        .feature-list {
+            position: relative;
+            z-index: 1;
+            list-style: none;
+            padding: 0;
+            margin: 25px 0 0;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .feature-list i {
+            color: #79ddb1;
+            font-size: 17px;
+        }
+
+        .welcome-footer {
+            position: relative;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 12px;
+        }
+
+        /* Phần đăng nhập */
+        .login-panel {
+            padding: 55px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-heading {
+            margin-bottom: 32px;
+        }
+
+        .login-heading .small-title {
+            display: inline-block;
+            color: #287da9;
+            background: #eaf5fb;
+            padding: 7px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+        }
+
+        .login-heading h2 {
+            color: #19364f;
+            font-size: 29px;
+            font-weight: 800;
+            margin-bottom: 9px;
+        }
+
+        .login-heading p {
+            color: #8a969f;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .form-label {
+            color: #344b5d;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 9px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 22px;
+        }
+
+        .input-group-text {
+            background: #f7f9fb;
+            border: 1px solid #e2e8ee;
+            border-right: 0;
+            color: #6b879a;
+            border-radius: 10px 0 0 10px;
+            padding: 0 15px;
+        }
+
+        .form-control {
+            min-height: 49px;
+            background: #f7f9fb;
+            border: 1px solid #e2e8ee;
+            border-left: 0;
+            border-radius: 0 10px 10px 0;
+            font-size: 14px;
+            padding: 12px 13px;
+            color: #263d50;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            background: white;
+            border-color: #3685b4;
+            box-shadow: 0 0 0 3px rgba(54, 133, 180, 0.12);
+        }
+
+        .password-toggle {
+            border: 1px solid #e2e8ee;
+            border-left: 0;
+            background: #f7f9fb;
+            color: #82919c;
+            padding: 0 14px;
+            border-radius: 0 10px 10px 0;
+            cursor: pointer;
+        }
+
+        .password-toggle:hover {
+            color: #287da9;
+        }
+
+        .password-input {
+            border-radius: 0;
+        }
+
+        .btn-login {
+            width: 100%;
+            min-height: 50px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            background: linear-gradient(100deg, #2479aa, #18577f);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            box-shadow: 0 7px 16px rgba(36, 121, 170, 0.22);
+            transition: all 0.2s ease;
+        }
+
+        .btn-login:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(36, 121, 170, 0.3);
+            background: linear-gradient(100deg, #1e6d9b, #124c70);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .home-link {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            color: #738492;
+            text-decoration: none;
+            font-size: 13px;
+            margin-top: 25px;
+            transition: color 0.2s;
+        }
+
+        .home-link:hover {
+            color: #2479aa;
+        }
+
+        .security-note {
+            margin-top: 30px;
+            padding-top: 18px;
+            border-top: 1px solid #edf0f3;
+            color: #9aa5ad;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .login-wrapper {
+                max-width: 480px;
+                min-height: auto;
+                grid-template-columns: 1fr;
+                border-radius: 18px;
+            }
+
+            .welcome-panel {
+                padding: 25px 28px;
+            }
+
+            .welcome-content {
+                margin: 25px 0 10px;
+            }
+
+            .welcome-content h1 {
+                font-size: 25px;
+            }
+
+            .welcome-content p {
+                margin-bottom: 10px;
+            }
+
+            .feature-list,
+            .welcome-footer {
+                display: none;
+            }
+
+            .login-panel {
+                padding: 35px 28px;
+            }
+
+            .login-heading h2 {
+                font-size: 25px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-panel {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <!-- KHU VỰC GIỚI THIỆU -->
+    <section class="welcome-panel">
+
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="bi bi-buildings-fill"></i>
+            </div>
+
+            <div class="brand-name">
+                QUẢN LÝ<br>PHÒNG TRỌ
+            </div>
         </div>
 
-        <!-- Hiển thị lỗi nếu sai tài khoản -->
-        <div th:if="${error}" class="alert alert-danger py-2 small" th:text="${error}"></div>
+        <div class="welcome-content">
+            <h1>Quản lý nhà trọ<br>thông minh và tiện lợi</h1>
+
+            <p>
+                Hệ thống hỗ trợ chủ trọ quản lý phòng,
+                khách thuê, hợp đồng, hóa đơn và doanh thu
+                một cách tập trung, hiệu quả.
+            </p>
+
+            <ul class="feature-list">
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Quản lý thông tin phòng và khách thuê
+                </li>
+
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Theo dõi hợp đồng và hóa đơn
+                </li>
+
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Quản lý lịch đăng ký xem phòng
+                </li>
+
+                <li>
+                    <i class="bi bi-check-circle-fill"></i>
+                    Thống kê và báo cáo doanh thu
+                </li>
+            </ul>
+        </div>
+
+        <div class="welcome-footer">
+            © 2026 Hệ thống quản lý phòng trọ
+        </div>
+
+    </section>
+
+    <!-- KHU VỰC ĐĂNG NHẬP -->
+    <section class="login-panel">
+
+        <div class="login-heading">
+            <span class="small-title">
+                <i class="bi bi-shield-lock-fill me-1"></i>
+                ADMINISTRATION
+            </span>
+
+            <h2>Chào mừng trở lại!</h2>
+
+            <p>Đăng nhập để truy cập hệ thống quản trị.</p>
+        </div>
+
+        <!-- Hiển thị lỗi đăng nhập -->
+        <div th:if="${error}"
+             class="alert alert-danger py-2 mb-4"
+             role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            <span th:text="${error}"></span>
+        </div>
 
         <form th:action="@{/login}" method="post">
-            <div class="mb-3">
-                <label class="form-label fw-bold">Tên đăng nhập:</label>
-                <!-- Đã đổi placeholder thành hướng dẫn chung -->
-                <input type="text" name="username" class="form-control" required placeholder="Nhập tên tài khoản...">
+
+            <!-- Tên đăng nhập -->
+            <div class="mb-1">
+                <label for="username" class="form-label">
+                    Tên đăng nhập
+                </label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person-fill"></i>
+                    </span>
+
+                    <input type="text"
+                           id="username"
+                           name="username"
+                           class="form-control"
+                           placeholder="Nhập tên đăng nhập"
+                           autocomplete="username"
+                           required
+                           autofocus>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label fw-bold">Mật khẩu:</label>
-                <!-- Đã đổi placeholder thành hướng dẫn chung -->
-                <input type="password" name="password" class="form-control" required placeholder="Nhập mật khẩu...">
+
+            <!-- Mật khẩu -->
+            <div class="mb-1">
+                <label for="password" class="form-label">
+                    Mật khẩu
+                </label>
+
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock-fill"></i>
+                    </span>
+
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           class="form-control password-input"
+                           placeholder="Nhập mật khẩu"
+                           autocomplete="current-password"
+                           required>
+
+                    <button type="button"
+                            class="password-toggle"
+                            id="togglePassword"
+                            aria-label="Hiện mật khẩu">
+                        <i class="bi bi-eye-fill" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Đăng Nhập</button>
+
+            <!-- Nút đăng nhập -->
+            <button type="submit" class="btn btn-login">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                ĐĂNG NHẬP HỆ THỐNG
+            </button>
+
         </form>
 
-        <div class="text-center mt-3">
-            <a th:href="@{/}" class="text-decoration-none small text-muted"><i class="bi bi-arrow-left"></i> Quay lại trang chủ</a>
+        <div class="text-center">
+            <a th:href="@{ / }"
+               class="home-link">
+                <i class="bi bi-arrow-left"></i>
+                Quay lại trang chủ
+            </a>
         </div>
-    </div>
+
+        <div class="security-note">
+            <i class="bi bi-shield-check me-1"></i>
+            Khu vực dành riêng cho quản trị viên.
+        </div>
+
+    </section>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Chức năng hiện / ẩn mật khẩu
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const toggleButton = document.getElementById("togglePassword");
+        const toggleIcon = document.getElementById("togglePasswordIcon");
+
+        toggleButton.addEventListener("click", function () {
+            const isPassword = passwordInput.type === "password";
+
+            passwordInput.type = isPassword ? "text" : "password";
+
+            toggleIcon.classList.toggle("bi-eye-fill", !isPassword);
+            toggleIcon.classList.toggle("bi-eye-slash-fill", isPassword);
+
+            toggleButton.setAttribute(
+                "aria-label",
+                isPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+            );
+        });
+    });
+</script>
+
 </body>
 </html>

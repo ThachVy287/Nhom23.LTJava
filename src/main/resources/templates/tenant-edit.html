@@ -1,56 +1,853 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Cập Nhật Thông Tin Khách Thuê</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-<div class="container mt-5" style="max-width: 600px;">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h3 class="mb-4 text-center text-warning">Cập Nhật Thông Tin Khách Thuê</h3>
-            
-            <!-- Hiển thị thông báo lỗi nếu có -->
-             <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <span th:text="${errorMessage}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            
-            <form th:action="@{/tenants/save}" th:object="${tenant}" method="post">
-                <!-- Bắt buộc phải có input hidden chứa id để phân biệt là cập nhật -->
-                <input type="hidden" th:field="*{id}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-                <div class="mb-3">
-                    <label class="form-label">Họ và tên:</label>
-                    <input type="text" th:field="*{fullName}" class="form-control" required placeholder="Nhập họ tên đầy đủ">
+    <title>Cập nhật khách thuê - Quản lý phòng trọ</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2479aa;
+            --primary-dark: #18577f;
+            --sidebar: #14283d;
+            --sidebar-hover: #203b55;
+            --background: #f4f7fb;
+            --text: #26384a;
+            --muted: #8a99a8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            background: var(--sidebar);
+            min-height: 100vh;
+            padding: 0;
+            color: white;
+        }
+
+        .sidebar-brand {
+            min-height: 82px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.09);
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            background: linear-gradient(135deg, #368fc0, #1e5c84);
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            line-height: 1.4;
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 10px;
+            color: #91a7bb;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+        }
+
+        .sidebar-label {
+            color: #758da3;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            padding: 25px 22px 10px;
+        }
+
+        .sidebar .nav {
+            padding: 0 12px;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #bdcbd8;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 12px 14px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 17px;
+            width: 21px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar .nav-link:hover {
+            color: white;
+            background: var(--sidebar-hover);
+            transform: translateX(2px);
+        }
+
+        .sidebar .nav-link.active {
+            color: white;
+            background: linear-gradient(100deg, #287fae, #1d6490);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .sidebar .nav-link.text-warning {
+            color: #f2c46d !important;
+        }
+
+        .sidebar .nav-link.text-danger {
+            color: #ff9999 !important;
+        }
+
+        .sidebar-footer {
+            margin: 30px 12px 15px;
+            padding: 16px 13px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .admin-avatar {
+            width: 37px;
+            height: 37px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: #2d7199;
+            font-size: 17px;
+        }
+
+        .admin-info {
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .admin-info small {
+            display: block;
+            margin-top: 3px;
+            color: #91a7bb;
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        /* ================= MAIN CONTENT ================= */
+
+        .main-content {
+            padding: 28px 32px;
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5ebf1;
+        }
+
+        .page-heading h1 {
+            font-size: 25px;
+            font-weight: 800;
+            color: #203b54;
+            margin: 0 0 6px;
+        }
+
+        .page-heading p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .breadcrumb-custom {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #94a2af;
+            font-size: 12px;
+        }
+
+        .breadcrumb-custom a {
+            color: #2479aa;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .breadcrumb-custom a:hover {
+            text-decoration: underline;
+        }
+
+        /* ================= FORM CARD ================= */
+
+        .form-card {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #edf0f4;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 22px rgba(30,50,70,0.045);
+        }
+
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 22px 27px;
+            background: linear-gradient(110deg, #1c5b83, #247eac);
+            color: white;
+        }
+
+        .form-header-icon {
+            width: 49px;
+            height: 49px;
+            border-radius: 13px;
+            background: rgba(255,255,255,0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            flex-shrink: 0;
+        }
+
+        .form-card-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0 0 5px;
+        }
+
+        .form-card-header p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.78);
+            margin: 0;
+        }
+
+        .form-card-body {
+            padding: 28px;
+        }
+
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #2b4055;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .form-section-title i {
+            color: #2479aa;
+            font-size: 17px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            color: #43576a;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #dc5959;
+            margin-left: 3px;
+        }
+
+        .input-group-text {
+            background: #f7f9fb;
+            border: 1px solid #e1e8ef;
+            border-right: none;
+            color: #718b9e;
+            border-radius: 9px 0 0 9px;
+            padding: 0 14px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 45px;
+            border: 1px solid #e1e8ef;
+            border-radius: 9px;
+            font-size: 13px;
+            color: #354b5e;
+            background-color: #f7f9fb;
+            box-shadow: none;
+        }
+
+        .input-group .form-control,
+        .input-group .form-select {
+            border-left: none;
+            border-radius: 0 9px 9px 0;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: white;
+            border-color: #3685b4;
+            box-shadow: 0 0 0 3px rgba(54,133,180,0.1);
+        }
+
+        .input-group:focus-within .input-group-text {
+            background: white;
+            border-color: #3685b4;
+        }
+
+        .form-control::placeholder {
+            color: #a2aeb8;
+        }
+
+        .form-note {
+            color: #98a5b0;
+            font-size: 11px;
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 22px;
+            margin-top: 5px;
+            border-top: 1px solid #edf1f5;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            background: linear-gradient(100deg, #287fae, #1d6490);
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 5px 13px rgba(36,121,170,0.16);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            color: white;
+            background: linear-gradient(100deg, #1e6d9b, #124c70);
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-height: 44px;
+            padding: 10px 18px;
+            border: 1px solid #dce4eb;
+            border-radius: 9px;
+            color: #687c8d;
+            background: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            background: #f2f6f9;
+            color: #2479aa;
+            border-color: #c8dbe8;
+        }
+
+        .bottom-note {
+            padding: 20px 0 5px;
+            color: #a1adb8;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 767px) {
+            .sidebar {
+                min-height: auto;
+            }
+
+            .sidebar-footer {
+                margin-top: 15px;
+            }
+
+            .main-content {
+                padding: 22px 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .page-heading h1 {
+                font-size: 22px;
+            }
+
+            .form-card-header {
+                padding: 20px;
+            }
+
+            .form-card-body {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn-submit,
+            .btn-back {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row g-0">
+
+        <!-- SIDEBAR -->
+        <aside class="col-12 col-md-3 col-lg-2 sidebar">
+
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="bi bi-buildings-fill"></i>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Số điện thoại:</label>
-                    <input type="text" th:field="*{phone}" class="form-control" required placeholder="Nhập số điện thoại">
+
+                <div class="brand-text">
+                    QUẢN LÝ TRỌ
+                    <small>ADMINISTRATION</small>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Căn cước công dân (CCCD):</label>
-                    <input type="text" th:field="*{cccd}" class="form-control" required placeholder="Nhập số CCCD">
+            </div>
+
+            <div class="sidebar-label">MENU CHÍNH</div>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <a th:href="@{/admin}" class="nav-link">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        Tổng quan
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/rooms}" class="nav-link">
+                        <i class="bi bi-door-open-fill"></i>
+                        Quản lý phòng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/tenants}" class="nav-link active">
+                        <i class="bi bi-people-fill"></i>
+                        Khách thuê
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/contracts}" class="nav-link">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        Hợp đồng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/services}" class="nav-link">
+                        <i class="bi bi-tools"></i>
+                        Dịch vụ
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/invoices}" class="nav-link">
+                        <i class="bi bi-receipt-cutoff"></i>
+                        Hóa đơn
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/appointments}" class="nav-link">
+                        <i class="bi bi-calendar-check-fill"></i>
+                        Lịch đăng ký xem phòng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/reports}" class="nav-link">
+                        <i class="bi bi-bar-chart-line-fill"></i>
+                        Báo cáo doanh thu
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="sidebar-label">TIỆN ÍCH</div>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <a th:href="@{/}" class="nav-link text-warning">
+                        <i class="bi bi-house-door-fill"></i>
+                        Xem trang chủ
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/logout}"
+                       class="nav-link text-danger"
+                       onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?')">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Đăng xuất
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="d-flex align-items-center gap-2">
+
+                    <div class="admin-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="admin-info">
+                        Quản trị viên
+                        <small>
+                            <i class="bi bi-circle-fill text-success me-1"
+                               style="font-size: 7px;"></i>
+                            Đang hoạt động
+                        </small>
+                    </div>
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Email:</label>
-                    <input type="email" th:field="*{email}" class="form-control" placeholder="Nhập địa chỉ email">
+            </div>
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-12 col-md-9 col-lg-10 main-content">
+
+            <!-- TIÊU ĐỀ -->
+            <div class="topbar">
+
+                <div class="page-heading">
+
+                    <div class="breadcrumb-custom">
+                        <a th:href="@{/admin}">
+                            Trang quản trị
+                        </a>
+
+                        <i class="bi bi-chevron-right"></i>
+
+                        <a th:href="@{/tenants}">
+                            Khách thuê
+                        </a>
+
+                        <i class="bi bi-chevron-right"></i>
+
+                        <span>Cập nhật thông tin</span>
+                    </div>
+
+                    <h1>
+                        <i class="bi bi-person-gear me-2"></i>
+                        Cập nhật khách thuê
+                    </h1>
+
+                    <p>
+                        Chỉnh sửa thông tin cá nhân và phòng đang thuê của khách hàng.
+                    </p>
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Chọn phòng trọ:</label>
-                    <select th:field="*{room.id}" class="form-select">
-                        <option value="">-- Chọn phòng cho thuê --</option>
-                        <option th:each="room : ${rooms}" th:value="${room.id}" th:text="${room.roomNumber + ' (Giá: ' + room.price + ')'}"></option>
-                    </select>
+
+            </div>
+
+            <!-- FORM CARD -->
+            <section class="form-card">
+
+                <div class="form-card-header">
+
+                    <div class="form-header-icon">
+                        <i class="bi bi-person-vcard-fill"></i>
+                    </div>
+
+                    <div>
+                        <h2>Thông tin khách thuê</h2>
+                        <p>Cập nhật chính xác thông tin của khách hàng.</p>
+                    </div>
+
                 </div>
-                <div class="text-center">
-                    <button type="submit" class="btn btn-warning px-4">Cập nhật</button>
-                    <a th:href="@{/tenants}" class="btn btn-secondary px-4">Quay lại</a>
+
+                <div class="form-card-body">
+
+                    <!-- THÔNG BÁO LỖI -->
+                    <div th:if="${errorMessage}"
+                         class="alert alert-danger alert-dismissible fade show mb-4"
+                         role="alert">
+
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                        <span th:text="${errorMessage}"></span>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close">
+                        </button>
+
+                    </div>
+
+                    <form th:action="@{/tenants/save}"
+                          th:object="${tenant}"
+                          method="post">
+
+                        <!-- GIỮ ID ĐỂ XÁC ĐỊNH BẢN GHI CẦN CẬP NHẬT -->
+                        <input type="hidden" th:field="*{id}"/>
+
+                        <!-- THÔNG TIN CÁ NHÂN -->
+                        <div class="form-section-title">
+                            <i class="bi bi-person-fill"></i>
+                            Thông tin cá nhân
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="fullName" class="form-label">
+                                Họ và tên
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+
+                                <input type="text"
+                                       id="fullName"
+                                       th:field="*{fullName}"
+                                       class="form-control"
+                                       required
+                                       maxlength="100"
+                                       placeholder="Nhập họ tên đầy đủ">
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+
+                                    <label for="phone" class="form-label">
+                                        Số điện thoại
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-telephone-fill"></i>
+                                        </span>
+
+                                        <input type="tel"
+                                               id="phone"
+                                               th:field="*{phone}"
+                                               class="form-control"
+                                               required
+                                               maxlength="20"
+                                               inputmode="tel"
+                                               placeholder="Nhập số điện thoại">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+
+                                    <label for="cccd" class="form-label">
+                                        Căn cước công dân (CCCD)
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-person-vcard"></i>
+                                        </span>
+
+                                        <input type="text"
+                                               id="cccd"
+                                               th:field="*{cccd}"
+                                               class="form-control"
+                                               required
+                                               maxlength="20"
+                                               inputmode="numeric"
+                                               placeholder="Nhập số CCCD">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="email" class="form-label">
+                                Email
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </span>
+
+                                <input type="email"
+                                       id="email"
+                                       th:field="*{email}"
+                                       class="form-control"
+                                       maxlength="150"
+                                       placeholder="Nhập địa chỉ email">
+                            </div>
+
+                            <div class="form-note">
+                                Có thể cập nhật email mới hoặc giữ nguyên thông tin hiện tại.
+                            </div>
+
+                        </div>
+
+                        <!-- THÔNG TIN PHÒNG -->
+                        <div class="form-section-title mt-4">
+                            <i class="bi bi-house-door-fill"></i>
+                            Thông tin phòng thuê
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="roomId" class="form-label">
+                                Chọn phòng trọ
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-door-open-fill"></i>
+                                </span>
+
+                                <select id="roomId"
+                                        th:field="*{room.id}"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Chọn phòng cho thuê --
+                                    </option>
+
+                                    <option th:each="room : ${rooms}"
+                                            th:value="${room.id}"
+                                            th:text="${room.roomNumber + ' (Giá: ' + room.price + ')'}">
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="form-note">
+                                Chọn phòng mới hoặc giữ nguyên phòng hiện tại của khách thuê.
+                            </div>
+
+                        </div>
+
+                        <!-- NÚT THAO TÁC -->
+                        <div class="form-actions">
+
+                            <a th:href="@{/tenants}" class="btn-back">
+                                <i class="bi bi-arrow-left"></i>
+                                Quay lại danh sách
+                            </a>
+
+                            <button type="submit" class="btn-submit">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Lưu thay đổi
+                            </button>
+
+                        </div>
+
+                    </form>
+
                 </div>
-            </form>
-        </div>
+
+            </section>
+
+            <div class="bottom-note">
+                © 2026 Hệ thống quản lý phòng trọ
+                <span class="mx-2">|</span>
+                Cập nhật khách thuê
+            </div>
+
+        </main>
+
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

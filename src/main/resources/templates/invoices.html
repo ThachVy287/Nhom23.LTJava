@@ -1,102 +1,903 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý Hóa Đơn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quản lý hóa đơn</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2479aa;
+            --primary-dark: #18577f;
+            --sidebar: #14283d;
+            --sidebar-hover: #203b55;
+            --background: #f4f7fb;
+            --text: #26384a;
+            --muted: #8a99a8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            background: var(--sidebar);
+            min-height: 100vh;
+            padding: 0;
+            color: white;
+        }
+
+        .sidebar-brand {
+            min-height: 82px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.09);
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            background: linear-gradient(135deg, #368fc0, #1e5c84);
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            line-height: 1.4;
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 10px;
+            color: #91a7bb;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+        }
+
+        .sidebar-label {
+            color: #758da3;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            padding: 25px 22px 10px;
+        }
+
+        .sidebar .nav {
+            padding: 0 12px;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #bdcbd8;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 12px 14px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 17px;
+            width: 21px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar .nav-link:hover {
+            color: white;
+            background: var(--sidebar-hover);
+            transform: translateX(2px);
+        }
+
+        .sidebar .nav-link.active {
+            color: white;
+            background: linear-gradient(100deg, #287fae, #1d6490);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .sidebar .nav-link.text-warning {
+            color: #f2c46d !important;
+        }
+
+        .sidebar .nav-link.text-danger {
+            color: #ff9999 !important;
+        }
+
+        .sidebar-footer {
+            margin: 30px 12px 15px;
+            padding: 16px 13px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .admin-avatar {
+            width: 37px;
+            height: 37px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: #2d7199;
+            font-size: 17px;
+        }
+
+        .admin-info {
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .admin-info small {
+            display: block;
+            margin-top: 3px;
+            color: #91a7bb;
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        /* ================= MAIN CONTENT ================= */
+
+        .main-content {
+            padding: 28px 32px;
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5ebf1;
+        }
+
+        .page-heading h1 {
+            font-size: 25px;
+            font-weight: 800;
+            color: #203b54;
+            margin: 0 0 6px;
+        }
+
+        .page-heading p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 17px;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            background: linear-gradient(100deg, #287fae, #1d6490);
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 5px 13px rgba(36,121,170,0.16);
+            transition: all 0.2s ease;
+        }
+
+        .btn-add:hover {
+            color: white;
+            background: linear-gradient(100deg, #1e6d9b, #124c70);
+            transform: translateY(-2px);
+        }
+
+        /* ================= ALERT ================= */
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .alert-dismissible .btn-close {
+            font-size: 10px;
+        }
+
+        /* ================= CONTENT CARD ================= */
+
+        .content-card {
+            background: white;
+            border: 1px solid #edf0f4;
+            border-radius: 13px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(30,50,70,0.035);
+        }
+
+        .card-header-custom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 18px 22px;
+            background: white;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .card-header-custom h5 {
+            color: #2b4055;
+            font-size: 15px;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .card-header-custom p {
+            color: #99a5af;
+            font-size: 11px;
+            margin: 5px 0 0;
+        }
+
+        .total-badge {
+            color: #2479aa;
+            background: #eaf4fa;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 20px;
+        }
+
+        .card-body-custom {
+            padding: 20px;
+        }
+
+        .filter-note {
+            color: #7e8d9a;
+            background: #f5f9fc;
+            border: 1px solid #e8f0f5;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-responsive {
+            border-radius: 8px;
+        }
+
+        .table {
+            margin-bottom: 0;
+            font-size: 12px;
+            color: #43576a;
+        }
+
+        .table thead th {
+            white-space: nowrap;
+            vertical-align: middle;
+            padding: 14px 12px;
+            background: #1c354d;
+            color: white;
+            border-color: #34516c;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding: 13px 12px;
+            border-color: #edf1f5;
+        }
+
+        .table tbody tr:hover {
+            background: #f4f9fc;
+        }
+
+        .invoice-code {
+            color: #2479aa;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .room-badge {
+            display: inline-block;
+            color: #2479aa;
+            background: #eaf4fa;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .month-text {
+            color: #43576a;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .meter-cell {
+            white-space: nowrap;
+            color: #52687b;
+            font-weight: 600;
+        }
+
+        .meter-arrow {
+            color: #9aa8b4;
+            font-size: 11px;
+        }
+
+        .price-cell {
+            white-space: nowrap;
+            color: #65798b;
+            font-size: 11px;
+        }
+
+        .amount {
+            color: #dc5959;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .status-paid {
+            display: inline-block;
+            background: #e7f7ee;
+            color: #238458;
+            border-radius: 20px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-unpaid {
+            display: inline-block;
+            background: #fff3df;
+            color: #a46b12;
+            border-radius: 20px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-other {
+            display: inline-block;
+            background: #edf0f3;
+            color: #6c7a88;
+            border-radius: 20px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .action-cell {
+            min-width: 150px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .btn-action {
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 6px 9px;
+        }
+
+        .empty-state {
+            padding: 45px 15px !important;
+            color: #8a99a8;
+        }
+
+        .empty-state i {
+            font-size: 38px;
+            display: block;
+            margin-bottom: 12px;
+            color: #b3c1cc;
+        }
+
+        .bottom-note {
+            padding: 20px 0 5px;
+            color: #a1adb8;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 767px) {
+            .sidebar {
+                min-height: auto;
+            }
+
+            .sidebar-footer {
+                margin-top: 15px;
+            }
+
+            .main-content {
+                padding: 22px 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .page-heading h1 {
+                font-size: 22px;
+            }
+
+            .btn-add {
+                width: 100%;
+            }
+
+            .card-body-custom {
+                padding: 12px;
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
+
+<body>
 
 <div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse text-white min-vh-100 p-3">
-            <h4 class="text-center py-3 text-warning border-bottom border-secondary">QUẢN LÝ TRỌ</h4>
-            <ul class="nav flex-column mt-3">
-                <!-- Cập nhật trỏ về /admin -->
-                <li class="nav-item mb-2"><a th:href="@{/admin}" class="nav-link text-white"><i class="bi bi-speedometer2 me-2"></i> Tổng quan</a></li>
-                <!-- Cập nhật trỏ về /admin/rooms -->
-                <li class="nav-item mb-2"><a th:href="@{/admin/rooms}" class="nav-link text-white"><i class="bi bi-door-open me-2"></i> Quản lý Phòng</a></li>
-                <li class="nav-item mb-2"><a th:href="@{/tenants}" class="nav-link text-white"><i class="bi bi-people me-2"></i> Khách Thuê</a></li>
-                <li class="nav-item mb-2"><a th:href="@{/contracts}" class="nav-link text-white"><i class="bi bi-file-earmark-text me-2"></i> Hợp Đồng</a></li>
-                <li class="nav-item mb-2"><a th:href="@{/services}" class="nav-link text-white"><i class="bi bi-tools me-2"></i> Dịch Vụ</a></li>
-                <li class="nav-item mb-2"><a th:href="@{/invoices}" class="nav-link text-white active bg-primary rounded"><i class="bi bi-receipt me-2"></i> Hóa Đơn</a></li>
-                <li class="nav-item mb-2"><a th:href="@{/reports}" class="nav-link text-white"><i class="bi bi-bar-chart-line me-2"></i> Báo Cáo Doanh Thu</a></li>
-            </ul>
-        </nav>
+    <div class="row g-0">
 
-        <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2 text-primary fw-bold"><i class="bi bi-receipt"></i> Quản Lý Hóa Đơn Hàng Tháng</h1>
-                <a th:href="@{/invoices/add}" class="btn btn-success shadow-sm"><i class="bi bi-plus-circle me-1"></i> Lập hóa đơn mới</a>
-            </div>
+        <!-- SIDEBAR -->
+        <aside class="col-12 col-md-3 col-lg-2 sidebar">
 
-            <!-- HIỂN THỊ THÔNG BÁO LỖI HOẶC THÀNH CÔNG -->
-            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <span th:text="${errorMessage}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="bi bi-buildings-fill"></i>
+                </div>
 
-            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>
-                <span th:text="${successMessage}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <!-- KẾT THÚC KHUNG THÔNG BÁO -->
-
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Phòng</th>
-                                <th>Tháng/Năm</th>
-                                <th>Điện (Cũ - Mới)</th>
-                                <th>Nước (Cũ - Mới)</th>
-                                <th>Tổng tiền (VNĐ)</th>
-                                <th>Trạng thái</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="inv : ${invoices}">
-                                <td th:text="${inv.id}">1</td>
-                                <td><span class="badge bg-secondary" th:text="${inv.room != null ? inv.room.roomNumber : 'N/A'}">P101</span></td>
-                                <td th:text="${inv.monthYear}">2026-10</td>
-                                <td th:text="${inv.oldElectricity + ' -> ' + inv.newElectricity}">0 -> 50</td>
-                                <td th:text="${inv.oldWater + ' -> ' + inv.newWater}">0 -> 10</td>
-                                <td class="fw-bold text-danger" th:text="${#numbers.formatDecimal(inv.totalAmount, 0, 'COMMA', 0, 'POINT')}">1,500,000</td>
-                                <td>
-                                    <span th:text="${inv.status == 'DA_THANH_TOAN' ? 'Đã thanh toán' : 'Chưa thanh toán'}"
-                                          th:class="${inv.status == 'DA_THANH_TOAN' ? 'badge bg-success' : 'badge bg-warning text-dark'}"></span>
-                                </td>
-                                <td class="text-center">
-                                    <!-- Nút Sửa -->
-                                    <a th:href="@{/invoices/edit/{id}(id=${inv.id})}" class="btn btn-outline-warning btn-sm me-1">
-                                        <i class="bi bi-pencil-square"></i> Sửa
-                                    </a>
-                                    <!-- Nút Xóa -->
-                                    <a th:href="@{/invoices/delete/{id}(id=${inv.id})}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa hóa đơn này?')">
-                                        <i class="bi bi-trash"></i> Xóa
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(invoices)}">
-                                <td colspan="8" class="text-center text-muted py-4">Chưa có hóa đơn nào được tạo!</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="brand-text">
+                    QUẢN LÝ TRỌ
+                    <small>ADMINISTRATION</small>
                 </div>
             </div>
+
+            <div class="sidebar-label">MENU CHÍNH</div>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <a th:href="@{/admin}" class="nav-link">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        Tổng quan
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/rooms}" class="nav-link">
+                        <i class="bi bi-door-open-fill"></i>
+                        Quản lý phòng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/tenants}" class="nav-link">
+                        <i class="bi bi-people-fill"></i>
+                        Khách thuê
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/contracts}" class="nav-link">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        Hợp đồng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/services}" class="nav-link">
+                        <i class="bi bi-tools"></i>
+                        Dịch vụ
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/invoices}" class="nav-link active">
+                        <i class="bi bi-receipt-cutoff"></i>
+                        Hóa đơn
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/appointments}" class="nav-link">
+                        <i class="bi bi-calendar-check-fill"></i>
+                        Lịch đăng ký xem phòng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/reports}" class="nav-link">
+                        <i class="bi bi-bar-chart-line-fill"></i>
+                        Báo cáo doanh thu
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="sidebar-label">TIỆN ÍCH</div>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <a th:href="@{/}" class="nav-link text-warning">
+                        <i class="bi bi-house-door-fill"></i>
+                        Xem trang chủ
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/logout}"
+                       class="nav-link text-danger"
+                       onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?')">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Đăng xuất
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="d-flex align-items-center gap-2">
+
+                    <div class="admin-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <div class="admin-info">
+                        Quản trị viên
+                        <small>
+                            <i class="bi bi-circle-fill text-success me-1"
+                               style="font-size: 7px;"></i>
+                            Đang hoạt động
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-12 col-md-9 col-lg-10 main-content">
+
+            <!-- TIÊU ĐỀ -->
+            <div class="topbar">
+
+                <div class="page-heading">
+                    <h1>
+                        <i class="bi bi-receipt-cutoff me-2"></i>
+                        Quản lý hóa đơn
+                    </h1>
+
+                    <p>
+                        Theo dõi hóa đơn tiền phòng, điện và nước hàng tháng.
+                    </p>
+                </div>
+
+                <a th:href="@{/invoices/add}" class="btn-add">
+                    <i class="bi bi-plus-circle-fill"></i>
+                    Lập hóa đơn mới
+                </a>
+
+            </div>
+
+            <!-- THÔNG BÁO LỖI -->
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible fade show shadow-sm"
+                 role="alert">
+
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${errorMessage}"></span>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <!-- THÔNG BÁO THÀNH CÔNG -->
+            <div th:if="${successMessage}"
+                 class="alert alert-success alert-dismissible fade show shadow-sm"
+                 role="alert">
+
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${successMessage}"></span>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <!-- DANH SÁCH HÓA ĐƠN -->
+            <section class="content-card">
+
+                <div class="card-header-custom">
+
+                    <div>
+                        <h5>
+                            <i class="bi bi-list-ul text-primary me-2"></i>
+                            Danh sách hóa đơn
+                        </h5>
+
+                        <p>
+                            Thông tin hóa đơn và trạng thái thanh toán của từng phòng.
+                        </p>
+                    </div>
+
+                    <span class="total-badge">
+                        <i class="bi bi-receipt me-1"></i>
+                        Tổng:
+                        <span th:text="${#lists.size(invoices)}">0</span>
+                        hóa đơn
+                    </span>
+
+                </div>
+
+                <div class="card-body-custom">
+
+                    <div class="filter-note mb-3">
+                        <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                        Đơn giá điện và nước được lưu theo từng hóa đơn,
+                        không thay đổi khi cập nhật giá dịch vụ mới.
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover table-striped align-middle">
+
+                            <thead>
+                                <tr>
+                                    <th>Mã hóa đơn</th>
+                                    <th>Phòng</th>
+                                    <th>Tháng/Năm</th>
+                                    <th>Điện (Cũ - Mới)</th>
+                                    <th>Đơn giá điện</th>
+                                    <th>Nước (Cũ - Mới)</th>
+                                    <th>Đơn giá nước</th>
+                                    <th>Tổng tiền (VNĐ)</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <tr th:each="inv : ${invoices}">
+
+                                    <!-- MÃ HÓA ĐƠN -->
+                                    <td>
+                                        <span class="invoice-code"
+                                              th:text="${'HD-' + inv.id}">
+                                            HD-1
+                                        </span>
+                                    </td>
+
+                                    <!-- PHÒNG -->
+                                    <td>
+                                        <span class="room-badge"
+                                              th:text="${inv.room != null ? inv.room.roomNumber : 'N/A'}">
+                                            P101
+                                        </span>
+                                    </td>
+
+                                    <!-- KỲ HÓA ĐƠN -->
+                                    <td>
+                                        <span class="month-text"
+                                              th:text="${inv.monthYear}">
+                                            2026-10
+                                        </span>
+                                    </td>
+
+                                    <!-- CHỈ SỐ ĐIỆN -->
+                                    <td>
+                                        <div class="meter-cell">
+                                            <span th:text="${inv.oldElectricity != null ? inv.oldElectricity : '-'}">
+                                                0
+                                            </span>
+
+                                            <i class="bi bi-arrow-right meter-arrow mx-1"></i>
+
+                                            <span th:text="${inv.newElectricity != null ? inv.newElectricity : '-'}">
+                                                50
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <!-- ĐƠN GIÁ ĐIỆN -->
+                                    <td>
+                                        <span th:if="${inv.electricityPrice != null}"
+                                              class="price-cell"
+                                              th:text="${#numbers.formatDecimal(inv.electricityPrice, 0, 'COMMA', 0, 'POINT') + ' đ/kWh'}">
+                                            3.500 đ/kWh
+                                        </span>
+
+                                        <span th:unless="${inv.electricityPrice != null}"
+                                              class="text-muted">
+                                            Chưa có
+                                        </span>
+                                    </td>
+
+                                    <!-- CHỈ SỐ NƯỚC -->
+                                    <td>
+                                        <div class="meter-cell">
+                                            <span th:text="${inv.oldWater != null ? inv.oldWater : '-'}">
+                                                0
+                                            </span>
+
+                                            <i class="bi bi-arrow-right meter-arrow mx-1"></i>
+
+                                            <span th:text="${inv.newWater != null ? inv.newWater : '-'}">
+                                                10
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <!-- ĐƠN GIÁ NƯỚC -->
+                                    <td>
+                                        <span th:if="${inv.waterPrice != null}"
+                                              class="price-cell"
+                                              th:text="${#numbers.formatDecimal(inv.waterPrice, 0, 'COMMA', 0, 'POINT') + ' đ/m³'}">
+                                            20.000 đ/m³
+                                        </span>
+
+                                        <span th:unless="${inv.waterPrice != null}"
+                                              class="text-muted">
+                                            Chưa có
+                                        </span>
+                                    </td>
+
+                                    <!-- TỔNG TIỀN -->
+                                    <td>
+                                        <span th:if="${inv.totalAmount != null}"
+                                              class="amount"
+                                              th:text="${#numbers.formatDecimal(inv.totalAmount, 0, 'COMMA', 0, 'POINT')}">
+                                            1,500,000
+                                        </span>
+
+                                        <span th:unless="${inv.totalAmount != null}"
+                                              class="amount">
+                                            0
+                                        </span>
+                                    </td>
+
+                                    <!-- TRẠNG THÁI -->
+                                    <td>
+
+                                        <span th:if="${inv.status == 'DA_THANH_TOAN'}"
+                                              class="status-paid">
+                                            <i class="bi bi-check-circle-fill me-1"></i>
+                                            Đã thanh toán
+                                        </span>
+
+                                        <span th:if="${inv.status == 'CHUA_THANH_TOAN'}"
+                                              class="status-unpaid">
+                                            <i class="bi bi-clock-fill me-1"></i>
+                                            Chưa thanh toán
+                                        </span>
+
+                                        <span th:if="${inv.status != 'DA_THANH_TOAN'
+                                                     and inv.status != 'CHUA_THANH_TOAN'}"
+                                              class="status-other">
+                                            Không xác định
+                                        </span>
+
+                                    </td>
+
+                                    <!-- HÀNH ĐỘNG -->
+                                    <td class="action-cell">
+
+                                        <!-- SỬA -->
+                                        <a th:href="@{/invoices/edit/{id}(id=${inv.id})}"
+                                           class="btn btn-outline-warning btn-action mb-1">
+
+                                            <i class="bi bi-pencil-square"></i>
+                                            Sửa
+                                        </a>
+
+                                        <!-- XÓA BẰNG POST -->
+                                        <form th:action="@{/invoices/delete/{id}(id=${inv.id})}"
+                                              method="post"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa hóa đơn này không?');">
+
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger btn-action mb-1">
+
+                                                <i class="bi bi-trash"></i>
+                                                Xóa
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+
+                                <!-- KHÔNG CÓ HÓA ĐƠN -->
+                                <tr th:if="${#lists.isEmpty(invoices)}">
+
+                                    <td colspan="10" class="text-center empty-state">
+
+                                        <i class="bi bi-receipt"></i>
+
+                                        <span class="fw-semibold">
+                                            Chưa có hóa đơn nào được tạo!
+                                        </span>
+
+                                        <p class="small mb-0 mt-2">
+                                            Nhấn nút Lập hóa đơn mới để bắt đầu.
+                                        </p>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- GHI CHÚ -->
+            <div class="alert alert-light border mt-4">
+
+                <i class="bi bi-info-circle-fill text-primary me-2"></i>
+
+                <strong>Lưu ý:</strong>
+                Đơn giá hiển thị là đơn giá tại thời điểm lập từng hóa đơn.
+                Doanh thu thực thu chỉ tính những hóa đơn đã thanh toán.
+
+            </div>
+
+            <div class="bottom-note">
+                © 2026 Hệ thống quản lý phòng trọ
+                <span class="mx-2">|</span>
+                Quản lý hóa đơn
+            </div>
+
         </main>
+
     </div>
 </div>
 
-<!-- Bootstrap JS để nút đóng (x) của alert hoạt động -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -1,124 +1,881 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Cập Nhật Thông Tin Phòng Trọ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cập nhật phòng trọ</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+
+        #sidebar {
+            min-height: 100vh;
+            background: #212529;
+        }
+
+        #sidebar .nav-link {
+            padding: 11px 14px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        #sidebar .nav-link:hover {
+            background: #343a40;
+        }
+
+        .page-title {
+            color: #243b55;
+            font-weight: 700;
+        }
+
+        .form-card {
+            border: none;
+            border-radius: 14px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .required-mark {
+            color: #dc3545;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #495057;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .image-info {
+            background: #f8f9fa;
+            border: 1px dashed #adb5bd;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+            gap: 12px;
+        }
+
+        .image-item {
+            position: relative;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 9px;
+            overflow: hidden;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 105px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-name {
+            padding: 6px;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .image-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 27px;
+            height: 27px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (max-width: 767px) {
+            #sidebar {
+                min-height: auto;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5 mb-5" style="max-width: 700px;">
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            <h3 class="mb-4 text-center text-warning">Cập Nhật Thông Tin Phòng Trọ</h3>
-            
-            <!-- Hiển thị thông báo lỗi nếu có -->
-             <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <span th:text="${errorMessage}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <nav id="sidebar"
+             class="col-md-3 col-lg-2 d-md-block text-white p-3">
+
+            <h4 class="text-center py-3 text-warning border-bottom border-secondary">
+                QUẢN LÝ TRỌ
+            </h4>
+
+            <ul class="nav flex-column mt-3">
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/admin}" class="nav-link text-white">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        Tổng quan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/admin/rooms}"
+                       class="nav-link text-white active bg-primary">
+                        <i class="bi bi-door-open me-2"></i>
+                        Quản lý Phòng
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/tenants}" class="nav-link text-white">
+                        <i class="bi bi-people me-2"></i>
+                        Khách Thuê
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/contracts}" class="nav-link text-white">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Hợp Đồng
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/services}" class="nav-link text-white">
+                        <i class="bi bi-tools me-2"></i>
+                        Dịch Vụ
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/invoices}" class="nav-link text-white">
+                        <i class="bi bi-receipt me-2"></i>
+                        Hóa Đơn
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/reports}" class="nav-link text-white">
+                        <i class="bi bi-bar-chart-line me-2"></i>
+                        Báo Cáo Doanh Thu
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2 mt-3 pt-3 border-top border-secondary">
+                    <a th:href="@{/}" class="nav-link text-warning">
+                        <i class="bi bi-house-door-fill me-2"></i>
+                        Xem trang chủ
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a th:href="@{/logout}"
+                       class="nav-link text-danger"
+                       onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?')">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        Đăng xuất
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+
+            <!-- TIÊU ĐỀ -->
+            <div class="pt-3 pb-3 mb-4 border-bottom">
+
+                <h1 class="h2 page-title mb-1">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Cập nhật thông tin phòng
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Chỉnh sửa thông tin, tiện nghi và hình ảnh phòng trọ.
+                </p>
+
             </div>
-            
-            <form th:action="@{/admin/rooms/save}" th:object="${room}" method="post" enctype="multipart/form-data">
-                <input type="hidden" th:field="*{id}" />
-                <!-- Ô chứa chuỗi URL các ảnh hiện tại -->
-                <input type="hidden" id="imageUrlsInput" th:field="*{imageUrls}" />
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Số phòng:</label>
-                    <input type="text" th:field="*{roomNumber}" class="form-control" required placeholder="Nhập số phòng (VD: P101)">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Giá thuê (VNĐ):</label>
-                    <input type="number" th:field="*{price}" class="form-control" required placeholder="Nhập giá thuê">
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Diện tích phòng (m²):</label>
-                        <input type="number" step="any" th:field="*{roomArea}" class="form-control" placeholder="VD: 20">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Diện tích phòng tắm (m²):</label>
-                        <input type="number" step="any" th:field="*{bathroomArea}" class="form-control" placeholder="VD: 3.5">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Vị trí tầng:</label>
-                        <input type="number" th:field="*{floorNumber}" class="form-control" placeholder="VD: 1, 2, 3...">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Máy lạnh:</label>
-                        <select th:field="*{hasAc}" class="form-select">
-                            <option value="true">Có sẵn máy lạnh</option>
-                            <option value="false">Không có</option>
-                        </select>
-                    </div>
-                </div>
+            <!-- THÔNG BÁO LỖI -->
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible fade show shadow-sm"
+                 role="alert">
 
-                <!-- KHU VỰC XEM VÀ XÓA ẢNH HIỆN TẠI -->
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Ảnh hiện tại (Bấm vào dấu X để xóa ảnh):</label>
-                    <div class="row g-2" id="currentImagesContainer">
-                        <div class="col-3 position-relative text-center" th:each="img, iterStat : ${room.imageUrls != null ? room.imageUrls.split(',') : {}}">
-                            <div th:if="${!img.isEmpty()}" class="border rounded p-1 bg-white shadow-sm">
-                                <img th:src="${img}" class="img-fluid rounded" style="height: 90px; width: 100%; object-fit: cover;">
-                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 rounded-circle p-1 lh-1" 
-                                        th:onclick="removeImage([[(${iterStat.index})]])" title="Xóa ảnh này">
-                                    <i class="bi bi-x"></i>
-                                </button>
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                <span th:text="${errorMessage}"></span>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <!-- FORM CẬP NHẬT -->
+            <div class="card form-card shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <form id="roomForm"
+                          th:action="@{/admin/rooms/save}"
+                          th:object="${room}"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <!-- LƯU DANH SÁCH ẢNH CŨ -->
+                        <input type="hidden"
+                               id="imageUrlsInput"
+                               th:field="*{imageUrls}">
+
+                        <!-- THÔNG TIN CƠ BẢN -->
+                        <h5 class="form-section-title">
+                            <i class="bi bi-house-door me-2"></i>
+                            Thông tin cơ bản
+                        </h5>
+
+                        <div class="mb-3">
+
+                            <label for="roomNumber" class="form-label">
+                                Số phòng <span class="required-mark">*</span>
+                            </label>
+
+                            <input type="text"
+                                   id="roomNumber"
+                                   th:field="*{roomNumber}"
+                                   class="form-control"
+                                   required
+                                   maxlength="50"
+                                   placeholder="Ví dụ: P101">
+
+                            <div class="form-text">
+                                Số phòng phải duy nhất trong hệ thống.
                             </div>
+
                         </div>
-                    </div>
-                </div>
 
-                <!-- KHU VỰC CHỌN THÊM ẢNH MỚI -->
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Thêm ảnh mới từ thư mục máy tính:</label>
-                    <input type="file" name="imageFiles" class="form-control" multiple accept="image/*">
-                    <div class="form-text text-muted">Có thể chọn nhiều hình cùng lúc để bổ sung vào phòng.</div>
-                </div>
+                        <div class="mb-3">
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Trạng thái:</label>
-                    <select th:field="*{status}" class="form-select">
-                        <option value="TRONG">Còn trống</option>
-                        <option value="DA_THUE">Đã thuê</option>
-                    </select>
+                            <label for="price" class="form-label">
+                                Giá thuê hàng tháng (VNĐ)
+                                <span class="required-mark">*</span>
+                            </label>
+
+                            <div class="input-group">
+
+                                <input type="number"
+                                       id="price"
+                                       th:field="*{price}"
+                                       class="form-control"
+                                       min="0.01"
+                                       step="any"
+                                       required
+                                       placeholder="Nhập giá thuê">
+
+                                <span class="input-group-text">VNĐ</span>
+
+                            </div>
+
+                            <div class="form-text">
+                                Giá thuê phải lớn hơn 0.
+                            </div>
+
+                        </div>
+
+                        <!-- DIỆN TÍCH VÀ VỊ TRÍ -->
+                        <h5 class="form-section-title mt-4">
+                            <i class="bi bi-rulers me-2"></i>
+                            Diện tích và vị trí
+                        </h5>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label for="roomArea" class="form-label">
+                                    Diện tích phòng (m²)
+                                </label>
+
+                                <input type="number"
+                                       id="roomArea"
+                                       th:field="*{roomArea}"
+                                       class="form-control"
+                                       min="0.01"
+                                       step="any"
+                                       placeholder="Ví dụ: 20">
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label for="bathroomArea" class="form-label">
+                                    Diện tích phòng tắm (m²)
+                                </label>
+
+                                <input type="number"
+                                       id="bathroomArea"
+                                       th:field="*{bathroomArea}"
+                                       class="form-control"
+                                       min="0"
+                                       step="any"
+                                       placeholder="Ví dụ: 3.5">
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label for="floorNumber" class="form-label">
+                                    Vị trí tầng
+                                </label>
+
+                                <input type="number"
+                                       id="floorNumber"
+                                       th:field="*{floorNumber}"
+                                       class="form-control"
+                                       min="0"
+                                       step="1"
+                                       placeholder="Ví dụ: 1, 2, 3...">
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label for="hasAc" class="form-label">
+                                    Máy lạnh
+                                </label>
+
+                                <select id="hasAc"
+                                        th:field="*{hasAc}"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Chưa cập nhật --
+                                    </option>
+
+                                    <option value="true">
+                                        Có sẵn máy lạnh
+                                    </option>
+
+                                    <option value="false">
+                                        Không có máy lạnh
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <!-- TRẠNG THÁI PHÒNG -->
+                        <h5 class="form-section-title mt-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Trạng thái phòng
+                        </h5>
+
+                        <div class="alert alert-info">
+
+                            <div class="d-flex align-items-center flex-wrap gap-2">
+
+                                <span>Trạng thái hiện tại:</span>
+
+                                <span th:if="${room.status == 'TRONG'}"
+                                      class="badge bg-success fs-6">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Còn trống
+                                </span>
+
+                                <span th:if="${room.status == 'DA_THUE'}"
+                                      class="badge bg-warning text-dark fs-6">
+                                    <i class="bi bi-person-check me-1"></i>
+                                    Đã thuê
+                                </span>
+
+                                <span th:if="${room.status != 'TRONG'
+                                             and room.status != 'DA_THUE'}"
+                                      class="badge bg-secondary fs-6">
+                                    Chưa xác định
+                                </span>
+
+                            </div>
+
+                            <hr>
+
+                            <small>
+                                Trạng thái phòng được đồng bộ thông qua chức năng
+                                tạo và thanh lý hợp đồng. Không thể thay đổi trực
+                                tiếp tại màn hình này.
+                            </small>
+
+                        </div>
+
+                        <!-- ẢNH HIỆN TẠI -->
+                        <h5 class="form-section-title mt-4">
+                            <i class="bi bi-images me-2"></i>
+                            Hình ảnh phòng hiện tại
+                        </h5>
+
+                        <div class="image-info mb-3">
+
+                            <p class="text-muted small mb-3">
+                                Nhấn dấu X trên ảnh để loại bỏ ảnh đó khỏi danh sách.
+                                Các ảnh được giữ lại sẽ không cần tải lên lại.
+                            </p>
+
+                            <div id="currentImagesContainer"
+                                 class="image-grid">
+
+                            </div>
+
+                            <div id="currentImageEmpty"
+                                 class="text-muted text-center py-3"
+                                 style="display:none;">
+
+                                <i class="bi bi-image fs-1 d-block mb-2"></i>
+
+                                Phòng hiện chưa có hình ảnh.
+                            </div>
+
+                            <div class="mt-3">
+
+                                <span class="badge bg-secondary">
+                                    Số ảnh hiện tại:
+                                    <span id="currentImageCount">0</span>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <!-- THÊM ẢNH MỚI -->
+                        <h5 class="form-section-title mt-4">
+                            <i class="bi bi-cloud-upload me-2"></i>
+                            Bổ sung hình ảnh mới
+                        </h5>
+
+                        <div class="image-info mb-3">
+
+                            <label for="imageFiles" class="form-label">
+                                Chọn ảnh từ máy tính
+                            </label>
+
+                            <input type="file"
+                                   id="imageFiles"
+                                   name="imageFiles"
+                                   class="form-control"
+                                   multiple
+                                   accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif">
+
+                            <div class="form-text mt-2">
+                                Có thể chọn nhiều hình cùng lúc.
+                                Chấp nhận JPG, JPEG, PNG, WEBP và GIF.
+                                Mỗi ảnh không vượt quá 5 MB.
+                                Tổng ảnh cũ và mới tối đa 10 ảnh.
+                            </div>
+
+                            <div id="newImageCount"
+                                 class="small fw-semibold text-primary mt-2">
+                                Chưa chọn ảnh mới.
+                            </div>
+
+                            <div id="newImageError"
+                                 class="text-danger small mt-2"
+                                 role="alert">
+                            </div>
+
+                            <div class="mt-2">
+
+                                <button type="button"
+                                        id="clearNewImages"
+                                        class="btn btn-outline-secondary btn-sm">
+
+                                    <i class="bi bi-x-circle me-1"></i>
+                                    Bỏ chọn ảnh mới
+                                </button>
+
+                            </div>
+
+                            <div id="newImagesPreview"
+                                 class="image-grid mt-3">
+                            </div>
+
+                        </div>
+
+                        <!-- MÔ TẢ -->
+                        <h5 class="form-section-title mt-4">
+                            <i class="bi bi-card-text me-2"></i>
+                            Mô tả phòng
+                        </h5>
+
+                        <div class="mb-3">
+
+                            <label for="description" class="form-label">
+                                Mô tả không gian phòng
+                            </label>
+
+                            <textarea id="description"
+                                      th:field="*{description}"
+                                      class="form-control"
+                                      rows="3"
+                                      maxlength="2000"
+                                      placeholder="Nhập mô tả về không gian và tiện nghi...">
+                            </textarea>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label for="bathroomDesc" class="form-label">
+                                Mô tả chi tiết phòng tắm
+                            </label>
+
+                            <textarea id="bathroomDesc"
+                                      th:field="*{bathroomDesc}"
+                                      class="form-control"
+                                      rows="3"
+                                      maxlength="1000"
+                                      placeholder="Ví dụ: Phòng tắm khép kín, có bình nước nóng lạnh...">
+                            </textarea>
+
+                        </div>
+
+                        <!-- NÚT CHỨC NĂNG -->
+                        <div class="d-flex justify-content-center gap-2 mt-4">
+
+                            <button type="submit"
+                                    class="btn btn-warning px-4">
+
+                                <i class="bi bi-save me-1"></i>
+                                Cập nhật phòng
+                            </button>
+
+                            <a th:href="@{/admin/rooms}"
+                               class="btn btn-secondary px-4">
+
+                                <i class="bi bi-arrow-left me-1"></i>
+                                Quay lại
+                            </a>
+
+                        </div>
+
+                    </form>
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Mô tả phòng:</label>
-                    <textarea th:field="*{description}" class="form-control" rows="2" placeholder="Nhập mô tả không gian phòng..."></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Mô tả chi tiết phòng tắm:</label>
-                    <textarea th:field="*{bathroomDesc}" class="form-control" rows="2" placeholder="VD: Phòng tắm khép kín, có bình nước nóng lạnh..."></textarea>
-                </div>
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-warning px-4">Cập nhật</button>
-                    <a th:href="@{/admin/rooms}" class="btn btn-secondary px-4">Quay lại</a>
-                </div>
-            </form>
-        </div>
+            </div>
+
+        </main>
     </div>
 </div>
 
-<!-- SCRIPT XỬ LÝ XÓA ẢNH TRỰC TIẾP TRÊN GIAO DIỆN -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    function removeImage(index) {
-        let inputField = document.getElementById('imageUrlsInput');
-        let urls = inputField.value ? inputField.value.split(',') : [];
-        
-        // Xóa ảnh tại vị trí index
-        urls.splice(index, 1);
-        
-        // Cập nhật lại giá trị input hidden
-        inputField.value = urls.join(',');
-        
-        // Load lại giao diện khu vực hiển thị ảnh
-        event.target.closest('.col-3').remove();
+    const imageUrlsInput =
+        document.getElementById("imageUrlsInput");
+
+    const currentImagesContainer =
+        document.getElementById("currentImagesContainer");
+
+    const currentImageCount =
+        document.getElementById("currentImageCount");
+
+    const currentImageEmpty =
+        document.getElementById("currentImageEmpty");
+
+    const imageInput =
+        document.getElementById("imageFiles");
+
+    const newImagesPreview =
+        document.getElementById("newImagesPreview");
+
+    const newImageCount =
+        document.getElementById("newImageCount");
+
+    const newImageError =
+        document.getElementById("newImageError");
+
+    const roomForm =
+        document.getElementById("roomForm");
+
+    const maxFileSize = 5 * 1024 * 1024;
+    const maxImageCount = 10;
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif"
+    ];
+
+    // Lấy danh sách ảnh cũ từ hidden input
+    function getCurrentImages() {
+
+        if (!imageUrlsInput.value.trim()) {
+            return [];
+        }
+
+        return imageUrlsInput.value
+            .split(",")
+            .map(image => image.trim())
+            .filter(image => image.length > 0);
     }
+
+    // Cập nhật danh sách URL ảnh cũ
+    function updateImageUrls(images) {
+        imageUrlsInput.value = images.join(",");
+    }
+
+    // Hiển thị các ảnh cũ
+    function renderCurrentImages() {
+
+        const images = getCurrentImages();
+
+        currentImagesContainer.innerHTML = "";
+
+        currentImageCount.textContent = images.length;
+
+        currentImageEmpty.style.display =
+            images.length === 0 ? "block" : "none";
+
+        images.forEach(function(url, index) {
+
+            const item = document.createElement("div");
+            item.className = "image-item";
+
+            const image = document.createElement("img");
+            image.src = url;
+            image.alt = "Ảnh phòng " + (index + 1);
+
+            const name = document.createElement("div");
+            name.className = "image-name text-muted";
+            name.textContent = "Ảnh " + (index + 1);
+
+            const removeButton = document.createElement("button");
+
+            removeButton.type = "button";
+            removeButton.className =
+                "btn btn-danger btn-sm image-remove";
+
+            removeButton.innerHTML =
+                '<i class="bi bi-x-lg"></i>';
+
+            removeButton.title = "Xóa ảnh này";
+
+            removeButton.addEventListener("click", function() {
+
+                const updatedImages = getCurrentImages();
+
+                updatedImages.splice(index, 1);
+
+                updateImageUrls(updatedImages);
+
+                renderCurrentImages();
+                updateNewImageCount();
+
+            });
+
+            image.addEventListener("error", function() {
+                item.style.display = "none";
+            });
+
+            item.appendChild(image);
+            item.appendChild(removeButton);
+            item.appendChild(name);
+
+            currentImagesContainer.appendChild(item);
+        });
+    }
+
+    // Kiểm tra ảnh mới
+    function validateSelectedImages(files) {
+
+        for (const file of files) {
+
+            if (!allowedTypes.includes(file.type)) {
+                return "File '" + file.name +
+                    "' không đúng định dạng ảnh cho phép.";
+            }
+
+            if (file.size > maxFileSize) {
+                return "File '" + file.name +
+                    "' vượt quá dung lượng 5 MB.";
+            }
+        }
+
+        return null;
+    }
+
+    // Cập nhật số lượng ảnh
+    function updateNewImageCount() {
+
+        const oldImages = getCurrentImages();
+        const newFiles = Array.from(imageInput.files);
+
+        const total = oldImages.length + newFiles.length;
+
+        currentImageCount.textContent = oldImages.length;
+
+        newImageCount.textContent =
+            "Ảnh cũ: " + oldImages.length +
+            " | Ảnh mới: " + newFiles.length +
+            " | Tổng cộng: " + total + "/10";
+
+        if (total > maxImageCount) {
+
+            newImageError.textContent =
+                "Tổng số ảnh không được vượt quá 10.";
+
+            return false;
+        }
+
+        const validationError =
+            validateSelectedImages(newFiles);
+
+        if (validationError) {
+
+            newImageError.textContent = validationError;
+
+            return false;
+        }
+
+        newImageError.textContent = "";
+
+        return true;
+    }
+
+    // Hiển thị ảnh mới được chọn
+    imageInput.addEventListener("change", function() {
+
+        newImagesPreview.innerHTML = "";
+        newImageError.textContent = "";
+
+        const files = Array.from(this.files);
+
+        if (files.length === 0) {
+
+            newImageCount.textContent = "Chưa chọn ảnh mới.";
+            return;
+        }
+
+        files.forEach(function(file, index) {
+
+            const item = document.createElement("div");
+            item.className = "image-item";
+
+            const image = document.createElement("img");
+
+            const imageUrl = URL.createObjectURL(file);
+
+            image.src = imageUrl;
+            image.alt = file.name;
+
+            image.onload = function() {
+                URL.revokeObjectURL(imageUrl);
+            };
+
+            const name = document.createElement("div");
+            name.className = "image-name";
+            name.textContent = file.name;
+
+            item.appendChild(image);
+            item.appendChild(name);
+
+            newImagesPreview.appendChild(item);
+        });
+
+        updateNewImageCount();
+    });
+
+    // Bỏ chọn toàn bộ ảnh mới
+    document.getElementById("clearNewImages")
+        .addEventListener("click", function() {
+
+            imageInput.value = "";
+            newImagesPreview.innerHTML = "";
+            newImageError.textContent = "";
+
+            updateNewImageCount();
+        });
+
+    // Kiểm tra khi gửi form
+    roomForm.addEventListener("submit", function(event) {
+
+        const oldImages = getCurrentImages();
+        const newFiles = Array.from(imageInput.files);
+
+        const totalImages = oldImages.length + newFiles.length;
+
+        if (totalImages > maxImageCount) {
+
+            event.preventDefault();
+
+            newImageError.textContent =
+                "Tổng số ảnh không được vượt quá 10.";
+
+            return;
+        }
+
+        const validationError =
+            validateSelectedImages(newFiles);
+
+        if (validationError) {
+
+            event.preventDefault();
+
+            newImageError.textContent = validationError;
+
+            return;
+        }
+
+        const bathroomArea =
+            parseFloat(document.getElementById("bathroomArea").value);
+
+        const roomArea =
+            parseFloat(document.getElementById("roomArea").value);
+
+        if (!isNaN(bathroomArea) &&
+                !isNaN(roomArea) &&
+                bathroomArea > roomArea) {
+
+            event.preventDefault();
+
+            alert(
+                "Diện tích phòng tắm không được lớn hơn diện tích phòng!"
+            );
+
+            return;
+        }
+    });
+
+    // Khởi tạo danh sách ảnh khi mở trang
+    renderCurrentImages();
+    updateNewImageCount();
+
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

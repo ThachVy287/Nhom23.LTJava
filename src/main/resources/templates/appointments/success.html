@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Đăng ký thành công</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-card {
+            width: 100%;
+            max-width: 570px;
+            background: white;
+            border: none;
+            border-radius: 18px;
+            padding: 45px 30px;
+            box-shadow: 0 10px 35px rgba(31, 52, 77, 0.09);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 22px;
+            border-radius: 50%;
+            background: #d8f3e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #198754;
+            font-size: 45px;
+        }
+
+        .success-title {
+            color: #198754;
+            font-weight: 800;
+        }
+
+        .home-button {
+            background: #244a76;
+            color: white;
+            border-radius: 9px;
+            padding: 12px 25px;
+            font-weight: 700;
+        }
+
+        .home-button:hover {
+            background: #173653;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container px-3">
+
+    <div class="card success-card mx-auto">
+
+        <div class="success-icon">
+
+            <i class="bi bi-check-lg"></i>
+
+        </div>
+
+        <h2 class="success-title mb-3">
+            Đăng ký thành công!
+        </h2>
+
+        <p class="text-muted mb-4"
+           th:text="${successMessage != null ? successMessage : 'Yêu cầu đăng ký xem phòng của bạn đã được ghi nhận.'}">
+
+            Yêu cầu đăng ký xem phòng của bạn đã được ghi nhận.
+
+        </p>
+
+        <div class="alert alert-info text-start small">
+
+            <i class="bi bi-info-circle-fill me-2"></i>
+
+            Lịch đăng ký đang ở trạng thái
+            <strong>Chờ xác nhận</strong>.
+            Chủ trọ sẽ liên hệ với bạn qua số điện thoại đã cung cấp.
+
+        </div>
+
+        <a th:href="@{/}"
+           class="btn home-button mt-3">
+
+            <i class="bi bi-house-fill me-2"></i>
+            Quay về trang chủ
+
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

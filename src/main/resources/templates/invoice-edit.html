@@ -1,82 +1,1338 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Cập Nhật Hóa Đơn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cập nhật hóa đơn - Quản lý phòng trọ</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2479aa;
+            --primary-dark: #18577f;
+            --sidebar: #14283d;
+            --sidebar-hover: #203b55;
+            --background: #f4f7fb;
+            --text: #26384a;
+            --muted: #8a99a8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            background: var(--sidebar);
+            min-height: 100vh;
+            padding: 0;
+            color: white;
+        }
+
+        .sidebar-brand {
+            min-height: 82px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.09);
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            background: linear-gradient(135deg, #368fc0, #1e5c84);
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            line-height: 1.4;
+        }
+
+        .brand-text small {
+            display: block;
+            font-size: 10px;
+            color: #91a7bb;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+        }
+
+        .sidebar-label {
+            color: #758da3;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            padding: 25px 22px 10px;
+        }
+
+        .sidebar .nav {
+            padding: 0 12px;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #bdcbd8;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 12px 14px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 17px;
+            width: 21px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar .nav-link:hover {
+            color: white;
+            background: var(--sidebar-hover);
+            transform: translateX(2px);
+        }
+
+        .sidebar .nav-link.active {
+            color: white;
+            background: linear-gradient(100deg, #287fae, #1d6490);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .sidebar .nav-link.text-warning {
+            color: #f2c46d !important;
+        }
+
+        .sidebar .nav-link.text-danger {
+            color: #ff9999 !important;
+        }
+
+        .sidebar-footer {
+            margin: 30px 12px 15px;
+            padding: 16px 13px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .admin-avatar {
+            width: 37px;
+            height: 37px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: #2d7199;
+            font-size: 17px;
+        }
+
+        .admin-info {
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .admin-info small {
+            display: block;
+            margin-top: 3px;
+            color: #91a7bb;
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        /* ================= MAIN CONTENT ================= */
+
+        .main-content {
+            padding: 28px 32px;
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5ebf1;
+        }
+
+        .page-heading h1 {
+            font-size: 25px;
+            font-weight: 800;
+            color: #203b54;
+            margin: 0 0 6px;
+        }
+
+        .page-heading p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .breadcrumb-custom {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #94a2af;
+            font-size: 12px;
+        }
+
+        .breadcrumb-custom a {
+            color: #2479aa;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .breadcrumb-custom a:hover {
+            text-decoration: underline;
+        }
+
+        /* ================= FORM CARD ================= */
+
+        .form-card {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #edf0f4;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 22px rgba(30,50,70,0.045);
+        }
+
+        .form-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 22px 27px;
+            background: linear-gradient(110deg, #1c5b83, #247eac);
+            color: white;
+        }
+
+        .form-header-icon {
+            width: 49px;
+            height: 49px;
+            border-radius: 13px;
+            background: rgba(255,255,255,0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            flex-shrink: 0;
+        }
+
+        .form-card-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0 0 5px;
+        }
+
+        .form-card-header p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.78);
+            margin: 0;
+        }
+
+        .form-card-body {
+            padding: 28px;
+        }
+
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #2b4055;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .form-section-title i {
+            color: #2479aa;
+            font-size: 17px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            color: #43576a;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #dc5959;
+            margin-left: 3px;
+        }
+
+        .input-group-text {
+            background: #f7f9fb;
+            border: 1px solid #e1e8ef;
+            border-right: none;
+            color: #718b9e;
+            border-radius: 9px 0 0 9px;
+            padding: 0 14px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 45px;
+            border: 1px solid #e1e8ef;
+            border-radius: 9px;
+            font-size: 13px;
+            color: #354b5e;
+            background-color: #f7f9fb;
+            box-shadow: none;
+        }
+
+        .input-group .form-control,
+        .input-group .form-select {
+            border-left: none;
+            border-radius: 0 9px 9px 0;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: white;
+            border-color: #3685b4;
+            box-shadow: 0 0 0 3px rgba(54,133,180,0.1);
+        }
+
+        .input-group:focus-within .input-group-text {
+            background: white;
+            border-color: #3685b4;
+        }
+
+        .form-control::placeholder {
+            color: #a2aeb8;
+        }
+
+        .form-note {
+            color: #98a5b0;
+            font-size: 11px;
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        /* ================= READONLY INFORMATION ================= */
+
+        .readonly-box {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-height: 48px;
+            padding: 12px 15px;
+            background: #f7f9fb;
+            border: 1px solid #e1e8ef;
+            border-radius: 9px;
+            color: #354b5e;
+            font-size: 13px;
+        }
+
+        .readonly-box > i {
+            color: #2479aa;
+            font-size: 17px;
+        }
+
+        .invoice-code {
+            color: #2479aa;
+            font-weight: 800;
+        }
+
+        .room-name {
+            font-weight: 800;
+        }
+
+        /* ================= PRICE HISTORY ================= */
+
+        .price-display {
+            background: #f0f8f3;
+            border: 1px solid #d5eadc;
+            border-radius: 11px;
+            padding: 17px;
+        }
+
+        .price-display-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .price-title {
+            color: #315c45;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .price-title i {
+            margin-right: 6px;
+        }
+
+        .price-subtitle {
+            color: #849a8a;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .price-value {
+            color: #198754;
+            font-size: 19px;
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .price-missing {
+            color: #dc5959;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ================= METER CARDS ================= */
+
+        .meter-card {
+            background: #f7f9fb;
+            border: 1px solid #e9eef3;
+            border-radius: 11px;
+            padding: 18px;
+            height: 100%;
+        }
+
+        .meter-card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2b4055;
+            font-weight: 800;
+            font-size: 13px;
+            margin-bottom: 17px;
+        }
+
+        .meter-card-title i {
+            color: #2479aa;
+            font-size: 18px;
+        }
+
+        .meter-electricity .meter-card-title i {
+            color: #dc9636;
+        }
+
+        .meter-water .meter-card-title i {
+            color: #2688b6;
+        }
+
+        /* ================= ALERT ================= */
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 22px;
+            margin-top: 25px;
+            border-top: 1px solid #edf1f5;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            background: linear-gradient(100deg, #287fae, #1d6490);
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 5px 13px rgba(36,121,170,0.16);
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            color: white;
+            background: linear-gradient(100deg, #1e6d9b, #124c70);
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-height: 44px;
+            padding: 10px 18px;
+            border: 1px solid #dce4eb;
+            border-radius: 9px;
+            color: #687c8d;
+            background: white;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            background: #f2f6f9;
+            color: #2479aa;
+            border-color: #c8dbe8;
+        }
+
+        .bottom-note {
+            padding: 20px 0 5px;
+            color: #a1adb8;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 767px) {
+            .sidebar {
+                min-height: auto;
+            }
+
+            .sidebar-footer {
+                margin-top: 15px;
+            }
+
+            .main-content {
+                padding: 22px 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .page-heading h1 {
+                font-size: 22px;
+            }
+
+            .form-card-header {
+                padding: 20px;
+            }
+
+            .form-card-body {
+                padding: 20px;
+            }
+
+            .meter-card {
+                padding: 15px;
+            }
+
+            .price-value {
+                text-align: left;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn-submit,
+            .btn-back {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container mt-5 mb-5" style="max-width: 600px;">
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <h3 class="mb-4 text-center text-warning">Cập Nhật Thông Tin Hóa Đơn</h3>
-            
-            <!-- HIỂN THỊ THÔNG BÁO LỖI RÀNG BUỘC -->
-            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <span th:text="${errorMessage}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row g-0">
+
+        <!-- SIDEBAR -->
+        <aside class="col-12 col-md-3 col-lg-2 sidebar">
+
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="bi bi-buildings-fill"></i>
+                </div>
+
+                <div class="brand-text">
+                    QUẢN LÝ TRỌ
+                    <small>ADMINISTRATION</small>
+                </div>
             </div>
 
-            <form th:action="@{/invoices/save}" th:object="${invoice}" method="post">
-                <!-- Bắt buộc phải có input hidden chứa id để phân biệt là cập nhật -->
-                <input type="hidden" th:field="*{id}" />
+            <div class="sidebar-label">MENU CHÍNH</div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Chọn Phòng:</label>
-                    <select th:field="*{room.id}" class="form-select" required>
-                        <option value="">-- Chọn phòng trọ --</option>
-                        <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.roomNumber + ' (Giá gốc: ' + r.price + ')'}"></option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Tháng / Năm (VD: 2026-10):</label>
-                    <input type="text" th:field="*{monthYear}" class="form-control" required placeholder="YYYY-MM">
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Số điện cũ:</label>
-                        <input type="number" step="any" th:field="*{oldElectricity}" class="form-control" required placeholder="0">
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <a th:href="@{/admin}" class="nav-link">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        Tổng quan
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/rooms}" class="nav-link">
+                        <i class="bi bi-door-open-fill"></i>
+                        Quản lý phòng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/tenants}" class="nav-link">
+                        <i class="bi bi-people-fill"></i>
+                        Khách thuê
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/contracts}" class="nav-link">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                        Hợp đồng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/services}" class="nav-link">
+                        <i class="bi bi-tools"></i>
+                        Dịch vụ
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/invoices}" class="nav-link active">
+                        <i class="bi bi-receipt-cutoff"></i>
+                        Hóa đơn
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/admin/appointments}" class="nav-link">
+                        <i class="bi bi-calendar-check-fill"></i>
+                        Lịch đăng ký xem phòng
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/reports}" class="nav-link">
+                        <i class="bi bi-bar-chart-line-fill"></i>
+                        Báo cáo doanh thu
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="sidebar-label">TIỆN ÍCH</div>
+
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <a th:href="@{/}" class="nav-link text-warning">
+                        <i class="bi bi-house-door-fill"></i>
+                        Xem trang chủ
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a th:href="@{/logout}"
+                       class="nav-link text-danger"
+                       onclick="return confirm('Bạn có chắc chắn muốn đăng xuất không?')">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Đăng xuất
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="d-flex align-items-center gap-2">
+
+                    <div class="admin-avatar">
+                        <i class="bi bi-person-fill"></i>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Số điện mới:</label>
-                        <input type="number" step="any" th:field="*{newElectricity}" class="form-control" required placeholder="0">
+
+                    <div class="admin-info">
+                        Quản trị viên
+                        <small>
+                            <i class="bi bi-circle-fill text-success me-1"
+                               style="font-size: 7px;"></i>
+                            Đang hoạt động
+                        </small>
                     </div>
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Đơn giá điện (VNĐ/kWh):</label>
-                    <input type="number" th:field="*{electricityPrice}" class="form-control" required value="3500">
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Số nước cũ:</label>
-                        <input type="number" step="any" th:field="*{oldWater}" class="form-control" required placeholder="0">
+            </div>
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="col-12 col-md-9 col-lg-10 main-content">
+
+            <!-- TIÊU ĐỀ -->
+            <div class="topbar">
+
+                <div class="page-heading">
+
+                    <div class="breadcrumb-custom">
+                        <a th:href="@{/admin}">
+                            Trang quản trị
+                        </a>
+
+                        <i class="bi bi-chevron-right"></i>
+
+                        <a th:href="@{/invoices}">
+                            Hóa đơn
+                        </a>
+
+                        <i class="bi bi-chevron-right"></i>
+
+                        <span>Cập nhật hóa đơn</span>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Số nước mới:</label>
-                        <input type="number" step="any" th:field="*{newWater}" class="form-control" required placeholder="0">
+
+                    <h1>
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Cập nhật hóa đơn
+                    </h1>
+
+                    <p>
+                        Chỉnh sửa kỳ hóa đơn và chỉ số sử dụng điện, nước.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- FORM CARD -->
+            <section class="form-card">
+
+                <div class="form-card-header">
+
+                    <div class="form-header-icon">
+                        <i class="bi bi-receipt-cutoff"></i>
                     </div>
+
+                    <div>
+                        <h2>Thông tin hóa đơn tiền phòng</h2>
+                        <p>Kiểm tra thông tin và cập nhật các chỉ số cần thiết.</p>
+                    </div>
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Đơn giá nước (VNĐ/m3):</label>
-                    <input type="number" th:field="*{waterPrice}" class="form-control" required value="20000">
+
+                <div class="form-card-body">
+
+                    <!-- THÔNG BÁO LỖI -->
+                    <div th:if="${errorMessage}"
+                         class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm"
+                         role="alert">
+
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                        <span th:text="${errorMessage}"></span>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close">
+                        </button>
+
+                    </div>
+
+                    <form id="invoiceForm"
+                          th:action="@{/invoices/save}"
+                          th:object="${invoice}"
+                          method="post">
+
+                        <!-- GIỮ ID VÀ PHÒNG CỦA HÓA ĐƠN -->
+                        <input type="hidden" th:field="*{id}">
+                        <input type="hidden" th:field="*{room.id}">
+
+                        <!-- THÔNG TIN CƠ BẢN -->
+                        <div class="form-section-title">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                            Thông tin hóa đơn
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Mã hóa đơn
+                            </label>
+
+                            <div class="readonly-box">
+                                <i class="bi bi-receipt"></i>
+
+                                <span class="invoice-code"
+                                      th:text="${'HD-' + invoice.id}">
+                                    HD-1
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Phòng áp dụng
+                            </label>
+
+                            <div class="readonly-box">
+
+                                <i class="bi bi-door-open-fill"></i>
+
+                                <span class="room-name"
+                                      th:if="${invoice.room != null}"
+                                      th:text="${invoice.room.roomNumber}">
+                                    P101
+                                </span>
+
+                                <span class="text-muted"
+                                      th:unless="${invoice.room != null}">
+                                    Chưa xác định phòng
+                                </span>
+
+                            </div>
+
+                            <div class="form-note">
+                                Phòng của hóa đơn được giữ nguyên, không thể chuyển sang phòng khác.
+                            </div>
+
+                        </div>
+
+                        <!-- KỲ HÓA ĐƠN -->
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                Kỳ hóa đơn
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="hidden"
+                                   id="monthYear"
+                                   th:field="*{monthYear}">
+
+                            <div class="row">
+
+                                <div class="col-md-6 mb-2">
+
+                                    <label for="monthSelect" class="form-label">
+                                        Tháng
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-calendar-month"></i>
+                                        </span>
+
+                                        <select id="monthSelect"
+                                                class="form-select"
+                                                required>
+
+                                            <option value="">
+                                                -- Chọn tháng --
+                                            </option>
+
+                                            <option value="01">Tháng 1</option>
+                                            <option value="02">Tháng 2</option>
+                                            <option value="03">Tháng 3</option>
+                                            <option value="04">Tháng 4</option>
+                                            <option value="05">Tháng 5</option>
+                                            <option value="06">Tháng 6</option>
+                                            <option value="07">Tháng 7</option>
+                                            <option value="08">Tháng 8</option>
+                                            <option value="09">Tháng 9</option>
+                                            <option value="10">Tháng 10</option>
+                                            <option value="11">Tháng 11</option>
+                                            <option value="12">Tháng 12</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+
+                                    <label for="yearSelect" class="form-label">
+                                        Năm
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-calendar3"></i>
+                                        </span>
+
+                                        <select id="yearSelect"
+                                                class="form-select"
+                                                required>
+
+                                            <option value="">
+                                                -- Chọn năm --
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="form-note">
+                                Kỳ hóa đơn được lưu theo định dạng YYYY-MM, ví dụ 2026-10.
+                            </div>
+
+                        </div>
+
+                        <!-- CHỈ SỐ ĐIỆN -->
+                        <div class="form-section-title mt-4">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            Chỉ số điện
+                        </div>
+
+                        <div class="meter-card meter-electricity mb-3">
+
+                            <div class="meter-card-title">
+                                <i class="bi bi-lightning-charge-fill"></i>
+                                Thông tin sử dụng điện
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+
+                                    <div class="form-group mb-md-0">
+
+                                        <label for="oldElectricity" class="form-label">
+                                            Số điện cũ
+                                            <span class="required">*</span>
+                                        </label>
+
+                                        <input type="number"
+                                               step="any"
+                                               min="0"
+                                               id="oldElectricity"
+                                               th:field="*{oldElectricity}"
+                                               class="form-control"
+                                               required
+                                               placeholder="Nhập chỉ số điện cũ">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    <div class="form-group mb-0">
+
+                                        <label for="newElectricity" class="form-label">
+                                            Số điện mới
+                                            <span class="required">*</span>
+                                        </label>
+
+                                        <input type="number"
+                                               step="any"
+                                               min="0"
+                                               id="newElectricity"
+                                               th:field="*{newElectricity}"
+                                               class="form-control"
+                                               required
+                                               placeholder="Nhập chỉ số điện mới">
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ĐƠN GIÁ ĐIỆN LỊCH SỬ -->
+                        <div class="price-display mb-4">
+
+                            <div class="price-display-content">
+
+                                <div>
+                                    <div class="price-title">
+                                        <i class="bi bi-lightning-charge-fill"></i>
+                                        Đơn giá điện của hóa đơn
+                                    </div>
+
+                                    <div class="price-subtitle">
+                                        Giá được lưu tại thời điểm lập hóa đơn
+                                    </div>
+                                </div>
+
+                                <div class="price-value">
+
+                                    <span th:if="${electricityPrice != null}"
+                                          th:text="${#numbers.formatDecimal(electricityPrice, 0, 'COMMA', 0, 'POINT') + ' đ / ' + (electricityUnit != null ? electricityUnit : 'kWh')}">
+                                        3.500 đ / kWh
+                                    </span>
+
+                                    <span th:unless="${electricityPrice != null}"
+                                          class="price-missing">
+                                        Chưa có đơn giá
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CHỈ SỐ NƯỚC -->
+                        <div class="form-section-title mt-4">
+                            <i class="bi bi-droplet-fill"></i>
+                            Chỉ số nước
+                        </div>
+
+                        <div class="meter-card meter-water mb-3">
+
+                            <div class="meter-card-title">
+                                <i class="bi bi-droplet-fill"></i>
+                                Thông tin sử dụng nước
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+
+                                    <div class="form-group mb-md-0">
+
+                                        <label for="oldWater" class="form-label">
+                                            Số nước cũ
+                                            <span class="required">*</span>
+                                        </label>
+
+                                        <input type="number"
+                                               step="any"
+                                               min="0"
+                                               id="oldWater"
+                                               th:field="*{oldWater}"
+                                               class="form-control"
+                                               required
+                                               placeholder="Nhập chỉ số nước cũ">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    <div class="form-group mb-0">
+
+                                        <label for="newWater" class="form-label">
+                                            Số nước mới
+                                            <span class="required">*</span>
+                                        </label>
+
+                                        <input type="number"
+                                               step="any"
+                                               min="0"
+                                               id="newWater"
+                                               th:field="*{newWater}"
+                                               class="form-control"
+                                               required
+                                               placeholder="Nhập chỉ số nước mới">
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ĐƠN GIÁ NƯỚC LỊCH SỬ -->
+                        <div class="price-display mb-4">
+
+                            <div class="price-display-content">
+
+                                <div>
+                                    <div class="price-title">
+                                        <i class="bi bi-droplet-fill"></i>
+                                        Đơn giá nước của hóa đơn
+                                    </div>
+
+                                    <div class="price-subtitle">
+                                        Giá được lưu tại thời điểm lập hóa đơn
+                                    </div>
+                                </div>
+
+                                <div class="price-value">
+
+                                    <span th:if="${waterPrice != null}"
+                                          th:text="${#numbers.formatDecimal(waterPrice, 0, 'COMMA', 0, 'POINT') + ' đ / ' + (waterUnit != null ? waterUnit : 'm³')}">
+                                        20.000 đ / m³
+                                    </span>
+
+                                    <span th:unless="${waterPrice != null}"
+                                          class="price-missing">
+                                        Chưa có đơn giá
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- TRẠNG THÁI THANH TOÁN -->
+                        <div class="form-section-title mt-4">
+                            <i class="bi bi-wallet2"></i>
+                            Trạng thái thanh toán
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="status" class="form-label">
+                                Trạng thái
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    <i class="bi bi-clipboard-check-fill"></i>
+                                </span>
+
+                                <select id="status"
+                                        th:field="*{status}"
+                                        class="form-select">
+
+                                    <option value="CHUA_THANH_TOAN">
+                                        Chưa thanh toán
+                                    </option>
+
+                                    <option value="DA_THANH_TOAN">
+                                        Đã thanh toán
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <!-- GHI CHÚ -->
+                        <div class="alert alert-info mt-4 mb-0">
+
+                            <i class="bi bi-info-circle-fill me-2"></i>
+
+                            <strong>Lưu ý:</strong>
+                            Đơn giá điện và nước là dữ liệu lịch sử của hóa đơn.
+                            Việc thay đổi đơn giá trong mục Quản lý dịch vụ sẽ
+                            không làm thay đổi đơn giá của hóa đơn này.
+
+                        </div>
+
+                        <!-- NÚT THAO TÁC -->
+                        <div class="form-actions">
+
+                            <a th:href="@{/invoices}" class="btn-back">
+                                <i class="bi bi-arrow-left"></i>
+                                Quay lại danh sách
+                            </a>
+
+                            <button type="submit" class="btn-submit">
+                                <i class="bi bi-save-fill"></i>
+                                Cập nhật hóa đơn
+                            </button>
+
+                        </div>
+
+                    </form>
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Trạng thái thanh toán:</label>
-                    <select th:field="*{status}" class="form-select">
-                        <option value="CHUA_THANH_TOAN">Chưa thanh toán</option>
-                        <option value="DA_THANH_TOAN">Đã thanh toán</option>
-                    </select>
-                </div>
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-warning px-4">Cập nhật</button>
-                    <a th:href="@{/invoices}" class="btn btn-secondary px-4">Quay lại</a>
-                </div>
-            </form>
-        </div>
+
+            </section>
+
+            <div class="bottom-note">
+                © 2026 Hệ thống quản lý phòng trọ
+                <span class="mx-2">|</span>
+                Cập nhật hóa đơn
+            </div>
+
+        </main>
+
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const monthYearInput = document.getElementById("monthYear");
+    const monthSelect = document.getElementById("monthSelect");
+    const yearSelect = document.getElementById("yearSelect");
+    const invoiceForm = document.getElementById("invoiceForm");
+
+    // Tạo danh sách năm từ năm hiện tại - 5 đến năm hiện tại + 5.
+    const currentYear = new Date().getFullYear();
+
+    for (
+        let year = currentYear - 5;
+        year <= currentYear + 5;
+        year++
+    ) {
+
+        const option = document.createElement("option");
+
+        option.value = String(year);
+        option.textContent = String(year);
+
+        yearSelect.appendChild(option);
+    }
+
+    // Khởi tạo tháng và năm từ dữ liệu hóa đơn hiện tại.
+    function initializeMonthYear() {
+
+        const savedValue = (monthYearInput.value || "").trim();
+
+        const match = savedValue.match(
+            /^(\d{4})-(0[1-9]|1[0-2])$/
+        );
+
+        if (!match) {
+            return;
+        }
+
+        const savedYear = match[1];
+        const savedMonth = match[2];
+
+        // Thêm năm cũ nếu nằm ngoài danh sách tạo sẵn.
+        const yearExists = Array.from(yearSelect.options)
+            .some(option => option.value === savedYear);
+
+        if (!yearExists) {
+
+            const option = document.createElement("option");
+
+            option.value = savedYear;
+            option.textContent = savedYear;
+
+            yearSelect.appendChild(option);
+        }
+
+        yearSelect.value = savedYear;
+        monthSelect.value = savedMonth;
+    }
+
+    // Ghép tháng và năm thành YYYY-MM.
+    function updateMonthYear() {
+
+        const month = monthSelect.value;
+        const year = yearSelect.value;
+
+        if (month && year) {
+            monthYearInput.value = year + "-" + month;
+        } else {
+            monthYearInput.value = "";
+        }
+    }
+
+    monthSelect.addEventListener("change", updateMonthYear);
+    yearSelect.addEventListener("change", updateMonthYear);
+
+    // Kiểm tra chỉ số trước khi gửi biểu mẫu.
+    invoiceForm.addEventListener("submit", function (event) {
+
+        updateMonthYear();
+
+        if (!monthYearInput.value) {
+
+            event.preventDefault();
+
+            alert("Vui lòng chọn tháng và năm lập hóa đơn.");
+
+            return;
+        }
+
+        const oldElectricity = Number(
+            document.getElementById("oldElectricity").value
+        );
+
+        const newElectricity = Number(
+            document.getElementById("newElectricity").value
+        );
+
+        if (
+            !Number.isFinite(oldElectricity) ||
+            !Number.isFinite(newElectricity) ||
+            newElectricity < oldElectricity
+        ) {
+
+            event.preventDefault();
+
+            alert("Số điện mới phải lớn hơn hoặc bằng số điện cũ.");
+
+            return;
+        }
+
+        const oldWater = Number(
+            document.getElementById("oldWater").value
+        );
+
+        const newWater = Number(
+            document.getElementById("newWater").value
+        );
+
+        if (
+            !Number.isFinite(oldWater) ||
+            !Number.isFinite(newWater) ||
+            newWater < oldWater
+        ) {
+
+            event.preventDefault();
+
+            alert("Số nước mới phải lớn hơn hoặc bằng số nước cũ.");
+
+        }
+
+    });
+
+    // Khôi phục tháng/năm hiện tại của hóa đơn.
+    initializeMonthYear();
+
+});
+</script>
+
 </body>
 </html>
